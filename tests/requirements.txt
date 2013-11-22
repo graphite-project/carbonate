@@ -1,0 +1,6 @@
+nose
+mock
+coverage
+nosexcover
+flake8
+mccabe

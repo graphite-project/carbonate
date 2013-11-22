@@ -1,0 +1,5 @@
+#!/bin/sh
+
+. bin/activate
+
+python setup.py build install

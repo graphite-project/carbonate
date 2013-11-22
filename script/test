@@ -1,0 +1,6 @@
+#!/bin/sh
+
+. bin/activate
+
+bin/flake8 carbonate
+bin/nosetests

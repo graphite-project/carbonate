@@ -1,0 +1,19 @@
+#!/bin/sh
+
+command -v virtualenv >/dev/null ||
+  pip install virtualenv
+
+[ -f bin/activate ] || (
+    virtualenv .
+)
+
+. bin/activate
+
+venv=$PWD
+pyver=$(python -V 2>&1 | awk '{gsub(/\.[0-9]+$/,"",$0);print $2}')
+
+[ "$pyver" = "2.6" ] && pip install argparse
+bin/pip install -r requirements.txt --install-option="--install-scripts=$venv/bin" --install-option="--install-lib=$venv/lib/python$pyver/site-packages" --install-option="--install-data=$venv/lib/graphite"
+bin/pip install -r tests/requirements.txt
+
+script/make

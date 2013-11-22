@@ -1,0 +1,230 @@
+# Carbonate
+
+> "Pop bottles." *-- Birdman*
+
+Graphite clusters are pretty cool. Here are some primitive tools to help you manage your graphite clusters.
+
+All of the tools support two common arguments; the path to a config file, and the name of the cluster. Using these tools alongside a config file that describes your graphite clusters you can build up scripts to manage your metrics. Some of the tools could easily be replaced with one-liners in shell, but exist here for convenience and readability. The goal is to provide fast, predictable utilities that can easily be composed into more advanced tooling.
+
+## The Config
+
+Carbonate expects a configuration file that defines the clusters in your environment. The default config file is located at `/opt/graphite/conf/carbonate.conf` or can be provided on the command line. The default cluster is named 'main'.
+
+```
+[main]
+DESTINATIONS = 192.168.9.13:2004:carbon01, 192.168.9.15:2004:carbon02, 192.168.6.20:2004:carbon03
+REPLICATION_FACTOR = 2
+SSH_USER = carbon
+```
+
+You should take care to match the list of destination IPs or hostnames to the nodes in your cluster. Though its worth noting that the ports and labels are currently not used by carbonate. Order is important because of how the consistent hash ring is created.
+
+The replication factor should match the replication factor for the cluster.
+
+Finally, you can choose to provide a SSH user that will be used when carbonate requires connecting to another node in the cluster to perform an operation. If this is not provided, then the current user executing the command will be chosen.
+
+## The Tools
+
+### carbon-hosts
+
+```
+usage: carbon-hosts [-h] [-c CONFIG_FILE] [-C CLUSTER]
+
+Return the addresses for all nodes in a cluster
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -c CONFIG_FILE, --config-file CONFIG_FILE
+                        Config file to use (default:
+                        /opt/graphite/conf/carbonate.conf)
+  -C CLUSTER, --cluster CLUSTER
+                        Cluster name (default: main)
+```
+
+### carbon-lookup
+
+```
+usage: carbon-lookup [-h] [-c CONFIG_FILE] [-C CLUSTER] METRIC
+
+Lookup where a metric lives in a carbon cluster
+
+positional arguments:
+  METRIC                Full metric name to search for
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -c CONFIG_FILE, --config-file CONFIG_FILE
+                        Config file to use (default:
+                        /opt/graphite/conf/carbonate.conf)
+  -C CLUSTER, --cluster CLUSTER
+                        Cluster name (default: main)
+```
+
+### carbon-list
+
+```
+usage: carbon-list [-h] [-c CONFIG_FILE] [-C CLUSTER] [-d STORAGE_DIR]
+
+List the metrics this carbon node contains
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -c CONFIG_FILE, --config-file CONFIG_FILE
+                        Config file to use (default:
+                        /opt/graphite/conf/carbonate.conf)
+  -C CLUSTER, --cluster CLUSTER
+                        Cluster name (default: main)
+  -d STORAGE_DIR, --storage-dir STORAGE_DIR
+                        Storage dir (default: /opt/graphite/storage/whisper)
+```
+
+### carbon-sieve
+
+```
+usage: carbon-sieve [-h] [-c CONFIG_FILE] [-C CLUSTER] [-f METRICS_FILE]
+                    [-n NODE] [-I]
+
+Given a list of metrics, output those that belong to a node
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -c CONFIG_FILE, --config-file CONFIG_FILE
+                        Config file to use (default:
+                        /opt/graphite/conf/carbonate.conf)
+  -C CLUSTER, --cluster CLUSTER
+                        Cluster name (default: main)
+  -f METRICS_FILE, --metrics-file METRICS_FILE
+                        File containing metric names to filter, or '-' to read
+                        from STDIN (default: -)
+  -n NODE, --node NODE  Filter for metrics belonging to this node (default:
+                        self)
+  -I, --invert          Invert the sieve, match metrics that do NOT belong to
+                        a node (default: False)
+```
+
+### carbon-sync
+
+```
+usage: carbon-sync [-h] [-c CONFIG_FILE] [-C CLUSTER] [-f METRICS_FILE] -s
+                   SOURCE_NODE [-d STORAGE_DIR] [-b BATCH_SIZE]
+
+Sync local metrics using remote nodes in the cluster
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -c CONFIG_FILE, --config-file CONFIG_FILE
+                        Config file to use (default:
+                        /opt/graphite/conf/carbonate.conf)
+  -C CLUSTER, --cluster CLUSTER
+                        Cluster name (default: main)
+  -f METRICS_FILE, --metrics-file METRICS_FILE
+                        File containing metric names to filter, or '-' to read
+                        from STDIN (default: -)
+  -s SOURCE_NODE, --source-node SOURCE_NODE
+                        Override the source for metrics data (default: None)
+  -d STORAGE_DIR, --storage-dir STORAGE_DIR
+                        Storage dir (default: /opt/graphite/storage/whisper)
+  -b BATCH_SIZE, --batch-size BATCH_SIZE
+                        Batch size for the rsync job (default: 1000)
+```
+
+### whisper-aggregate
+
+```
+usage: whisper-aggregate [-h] [-f METRICS_FILE] [-d STORAGE_DIR]
+
+Set aggregation for whisper-backed metrics this carbon instance contains
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -f METRICS_FILE, --metrics-file METRICS_FILE
+                        File containing metric names and aggregation modes, or
+                        '-' to read from STDIN (default: -)
+  -d STORAGE_DIR, --storage-dir STORAGE_DIR
+                        Whisper storage directory (default:
+                        /opt/graphite/storage/whisper)
+```
+
+### whisper-fill
+
+```
+usage: whisper-fill [-h] SRC DST
+
+Backfill datapoints from one whisper file into another
+
+positional arguments:
+  SRC         Whisper source file
+  DST         Whisper destination file
+
+optional arguments:
+  -h, --help  show this help message and exit
+```
+
+## Example usage
+
+### Resync a node in a cluster
+
+```
+#!/bin/sh
+#
+# Resync a node from other nodes in the cluster
+#
+
+LOCAL_IP="$1"
+
+for h in $(carbon-hosts) ; do
+  (
+    ssh $h -- carbon-list |
+    carbon-sieve -n $LOCAL_IP |
+    carbon-sync -s $h
+  ) &
+done
+```
+
+### Rebalance a cluster
+
+```
+#!/bin/sh
+#
+# Rebalance a cluster from one size to another. Remember to cleanup metrics
+# that no longer belong when all nodes are rebalanced!
+#
+
+LOCAL_IP="$1"
+OLD_CLUSTER="old"
+NEW_CLUSTER="main"
+
+for h in $(carbon-hosts -C "$OLD_CLUSTER") ; do
+  ssh $h -- carbon-list |
+  carbon-sieve -C "$NEW_CLUSTER" -n $LOCAL_IP |
+  carbon-sync -s $h
+done
+```
+
+### List metrics that don't belong
+
+```
+#!/bin/sh
+#
+# List metrics from disk that don't belong
+#
+
+LOCAL_IP="$1"
+
+carbon-list | carbon-sieve -I -n $LOCAL_IP
+```
+
+# License and warnings
+
+These tools should be considered beta quality right now. Tests exist for most functionality, but there is still significant work to be done to make them bullet-proof. However, instead of sitting on this code, I'd rather release it and allow others to provide input and help guide the development. So, expect a few bugs and please help me fix them!
+
+## How to contribute:
+
+- Fork the repo
+- Run script/bootstrap to setup your dev environment
+- Create a feature branch
+- Add some tests and code
+- Run script/test to verify things build
+- Send me a PR
+
+The code is available under the MIT license.
