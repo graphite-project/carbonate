@@ -28,7 +28,7 @@ setup(
             'carbon-sync = carbonate.sync:main',
             'carbon-sieve = carbonate.cli:carbon_sieve',
             'carbon-list = carbonate.cli:carbon_list',
-            'carbon-hosts = carbonate.hosts:main',
+            'carbon-hosts = carbonate.cli:carbon_hosts',
             'whisper-fill = carbonate.fill:main',
             'whisper-aggregate = carbonate.aggregation:main'
             ]

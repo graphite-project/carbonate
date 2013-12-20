@@ -11,6 +11,19 @@ from .config import Config
 from .cluster import Cluster
 
 
+def carbon_hosts():
+    parser = common_parser('Return the addresses for all nodes in a cluster')
+
+    args = parser.parse_args()
+
+    config = Config(args.config_file)
+    cluster = Cluster(config, args.cluster)
+
+    cluster_hosts = [d[0] for d in cluster.destinations]
+
+    print "\n".join(cluster_hosts)
+
+
 def carbon_list():
     parser = common_parser('List the metrics this carbon node contains')
 
