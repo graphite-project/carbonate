@@ -23,6 +23,7 @@ class FillTest(unittest.TestCase):
         except (IOError, OSError):
             pass
 
+
     def test_fill_empty(self):
         testdb = "test-%s" % self.db
         self._removedb()
@@ -33,8 +34,7 @@ class FillTest(unittest.TestCase):
             pass
 
         schema = [(1, 20)]
-        data = [None]*20
-        emptyData = [data]
+        emptyData = []
         startTime = time.time()
         self._createdb(self.db, schema)
         self._createdb(testdb, schema, emptyData)
@@ -44,6 +44,7 @@ class FillTest(unittest.TestCase):
         original_data = whisper.fetch(self.db, 0)
         filled_data = whisper.fetch(testdb, 0)
         self.assertEqual(original_data, filled_data)
+
 
     def test_fill_should_override_destination(self):
         testdb = "test-%s" % self.db
@@ -57,16 +58,24 @@ class FillTest(unittest.TestCase):
         schema = [(1, 20)]
         data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
                 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+
+        end = int(time.time()) + schema[0][0]
+        start = end - (schema[0][1] * schema[0][0])
+        times = range(start, end, schema[0][0])
+
+        override_data = zip(times, data)
+
         emptyData = [data]
         startTime = time.time()
         self._createdb(self.db, schema)
-        self._createdb(testdb, schema, emptyData)
+        self._createdb(testdb, schema, override_data)
 
         fill_archives(self.db, testdb, startTime)
 
         original_data = whisper.fetch(self.db, 0)
         filled_data = whisper.fetch(testdb, 0)
         self.assertEqual(original_data, filled_data)
+
 
     def test_fill_should_handle_gaps(self):
         testdb = "test-%s" % self.db
@@ -78,18 +87,29 @@ class FillTest(unittest.TestCase):
             pass
 
         schema = [(1, 20)]
-        data = [1, 2, 3, 4, 5, 6, None, None, None, None,
-                11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
-        emptyData = [data]
-        startTime = time.time()
-        self._createdb(self.db, schema)
-        self._createdb(testdb, schema, emptyData)
+        complete = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+                    11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+        holes = [1, 2, 3, 4, 5, 6, None, None, None, None,
+                 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
 
-        fill_archives(self.db, testdb, startTime)
+        end = int(time.time()) + schema[0][0]
+        start = end - (schema[0][1] * schema[0][0])
+        times = range(start, end, schema[0][0])
+
+        complete_data = zip(times, complete)
+
+        holes_data = [t for t in zip(times, holes) if t[1] is not None]
+        self._createdb(self.db, schema, complete_data)
+        self._createdb(testdb, schema, holes_data)
+
+        fill_archives(self.db, testdb, time.time())
 
         original_data = whisper.fetch(self.db, 0)
         filled_data = whisper.fetch(testdb, 0)
+        print(original_data)
+        print(filled_data)
         self.assertEqual(original_data, filled_data)
+
 
     def _createdb(self, wsp, schema=[(1, 20)], data=None):
         whisper.create(wsp, schema)
@@ -98,7 +118,7 @@ class FillTest(unittest.TestCase):
             data = []
             for i in range(20):
                 data.append((tn + 1 + i, random.random() * 10))
-        whisper.update_many(wsp, data[1:])
+        whisper.update_many(wsp, data)
         return data
 
     @classmethod
