@@ -106,8 +106,6 @@ class FillTest(unittest.TestCase):
 
         original_data = whisper.fetch(self.db, 0)
         filled_data = whisper.fetch(testdb, 0)
-        print(original_data)
-        print(filled_data)
         self.assertEqual(original_data, filled_data)
 
 
