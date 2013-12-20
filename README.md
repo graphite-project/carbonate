@@ -2,6 +2,8 @@
 
 > "Pop bottles." *-- Birdman*
 
+[![Build Status](https://travis-ci.org/jssjr/carbonate.png)](https://travis-ci.org/jssjr/carbonate)
+
 Graphite clusters are pretty cool. Here are some primitive tools to help you manage your graphite clusters.
 
 All of the tools support two common arguments; the path to a config file, and the name of the cluster. Using these tools alongside a config file that describes your graphite clusters you can build up scripts to manage your metrics. Some of the tools could easily be replaced with one-liners in shell, but exist here for convenience and readability. The goal is to provide fast, predictable utilities that can easily be composed into more advanced tooling.
