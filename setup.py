@@ -26,7 +26,7 @@ setup(
         'console_scripts': [
             'carbon-lookup = carbonate.lookup:main',
             'carbon-sync = carbonate.sync:main',
-            'carbon-sieve = carbonate.sieve:main',
+            'carbon-sieve = carbonate.cli.carbon:sieve',
             'carbon-list = carbonate.cli.carbon:list',
             'carbon-hosts = carbonate.hosts:main',
             'whisper-fill = carbonate.fill:main',
