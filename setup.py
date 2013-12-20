@@ -25,7 +25,7 @@ setup(
     entry_points = {
         'console_scripts': [
             'carbon-lookup = carbonate.cli:carbon_lookup',
-            'carbon-sync = carbonate.sync:main',
+            'carbon-sync = carbonate.cli:carbon_sync',
             'carbon-sieve = carbonate.cli:carbon_sieve',
             'carbon-list = carbonate.cli:carbon_list',
             'carbon-hosts = carbonate.cli:carbon_hosts',

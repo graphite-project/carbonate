@@ -1,11 +1,15 @@
 import errno
 import fileinput
+import logging
 import sys
+
+from time import time
 
 from .list import listMetrics
 from .sieve import filterMetrics
 from .util import local_addresses, common_parser
 from .lookup import lookup
+from .sync import run_batch
 
 from .config import Config
 from .cluster import Cluster
@@ -104,3 +108,77 @@ def carbon_sieve():
                 print metric.strip()
     except KeyboardInterrupt:
         sys.exit(1)
+
+
+def carbon_sync():
+    parser = common_parser(
+        'Sync local metrics using remote nodes in the cluster'
+        )
+
+    parser.add_argument(
+        '-f', '--metrics-file',
+        default='-',
+        help='File containing metric names to filter, or \'-\' ' +
+             'to read from STDIN')
+
+    parser.add_argument(
+        '-s', '--source-node',
+        required=True,
+        help='Override the source for metrics data')
+
+    parser.add_argument(
+        '-d', '--storage-dir',
+        default='/opt/graphite/storage/whisper',
+        help='Storage dir')
+
+    parser.add_argument(
+        '-b', '--batch-size',
+        default=1000,
+        help='Batch size for the rsync job')
+
+    args = parser.parse_args()
+
+    logging.basicConfig(level=logging.INFO)
+
+    if args.metrics_file and args.metrics_file[0] != '-':
+        fi = args.metrics_file
+    else:
+        fi = []
+
+    config = Config(args.config_file)
+
+    user = config.ssh_user()
+    remote_ip = args.source_node
+    remote = "%s@%s:%s/" % (user, remote_ip, args.storage_dir)
+
+    metrics_to_sync = []
+
+    start = time()
+    total_metrics = 0
+    batch_size = int(args.batch_size)
+
+    for metric in fileinput.input(fi):
+        total_metrics += 1
+        metric = metric.strip()
+        mpath = metric.replace('.', '/') + "." + "wsp"
+
+        metrics_to_sync.append(mpath)
+
+        if total_metrics % batch_size == 0:
+            print "* Running batch %s-%s" \
+                  % (total_metrics-batch_size+1, total_metrics)
+            run_batch(metrics_to_sync, remote, args.storage_dir)
+            metrics_to_sync = []
+
+    if len(metrics_to_sync) > 0:
+        print "* Running batch %s-%s" \
+              % (total_metrics-len(metrics_to_sync)+1, total_metrics)
+        run_batch(metrics_to_sync, remote, args.storage_dir)
+
+    elapsed = (time() - start)
+
+    print ""
+    print "* Sync Report"
+    print "  ========================================"
+    print "  Total metrics synced: %s" % total_metrics
+    print "  Total time: %ss" % elapsed
