@@ -1,6 +1,23 @@
 #!/bin/sh
 
+set -e
+
 . bin/activate
+
+# Testing scripts
+cat << EOF |
+carbon-lookup
+carbon-sync
+carbon-sieve
+carbon-list
+carbon-hosts
+whisper-fill
+whisper-aggregate
+EOF
+while read script ; do
+  echo "test execution $script"
+  bin/$script --help >/dev/null
+done
 
 bin/flake8 carbonate
 bin/nosetests
