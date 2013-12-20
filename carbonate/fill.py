@@ -82,10 +82,10 @@ def fill_archives(src, dst, startFrom):
             elif v and gapstart:
                 # ignore single units lost
                 if (start - gapstart) > archive['secondsPerPoint']:
-                    fill(src, dst, gapstart, start)
+                    fill(src, dst, gapstart - step, start)
                 gapstart = None
             elif gapstart and start == end - step:
-                fill(src, dst, gapstart, start)
+                fill(src, dst, gapstart - step, start)
 
             start += step
 
