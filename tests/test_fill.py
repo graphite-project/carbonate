@@ -46,7 +46,7 @@ class FillTest(unittest.TestCase):
         self.assertEqual(original_data, filled_data)
 
 
-    def test_fill_should_override_destination(self):
+    def test_fill_should_not_override_destination(self):
         testdb = "test-%s" % self.db
         self._removedb()
 
@@ -74,7 +74,7 @@ class FillTest(unittest.TestCase):
 
         original_data = whisper.fetch(self.db, 0)
         filled_data = whisper.fetch(testdb, 0)
-        self.assertEqual(original_data, filled_data)
+        self.assertEqual(data, filled_data[1])
 
 
     def test_fill_should_handle_gaps(self):
