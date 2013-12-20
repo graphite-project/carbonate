@@ -2,14 +2,15 @@ import errno
 import fileinput
 import sys
 
-from ..list import listMetrics
-from ..sieve import filterMetrics
-from ..util import local_addresses, common_parser
-from ..config import Config
-from ..cluster import Cluster
+from .list import listMetrics
+from .sieve import filterMetrics
+from .util import local_addresses, common_parser
+
+from .config import Config
+from .cluster import Cluster
 
 
-def list():
+def carbon_list():
     parser = common_parser('List the metrics this carbon node contains')
 
     parser.add_argument(
@@ -30,7 +31,7 @@ def list():
         sys.exit(1)
 
 
-def sieve():
+def carbon_sieve():
     parser = common_parser(
         'Given a list of metrics, output those that belong to a node')
 

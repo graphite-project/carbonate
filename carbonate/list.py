@@ -1,7 +1,6 @@
-import errno
 import os
 import re
-import sys
+
 
 def listMetrics(storage_dir, metric_suffix='wsp'):
     metric_regex = re.compile(".*\.%s$" % metric_suffix)
@@ -14,5 +13,3 @@ def listMetrics(storage_dir, metric_suffix='wsp'):
                 m_name, m_ext = os.path.splitext(m_path)
                 m_name = m_name.replace('/', '.')
                 print m_name
-
-
