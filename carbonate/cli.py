@@ -5,6 +5,7 @@ import sys
 from .list import listMetrics
 from .sieve import filterMetrics
 from .util import local_addresses, common_parser
+from .lookup import lookup
 
 from .config import Config
 from .cluster import Cluster
@@ -29,6 +30,22 @@ def carbon_list():
             raise SystemExit(e)
     except KeyboardInterrupt:
         sys.exit(1)
+
+
+def carbon_lookup():
+    parser = common_parser('Lookup where a metric lives in a carbon cluster')
+
+    parser.add_argument(
+        'metric', metavar='METRIC', nargs=1,
+        type=str,
+        help='Full metric name to search for')
+
+    args = parser.parse_args()
+
+    config = Config(args.config_file)
+    cluster = Cluster(config, args.cluster)
+
+    print "\n".join(lookup(str(args.metric[0]), cluster))
 
 
 def carbon_sieve():
