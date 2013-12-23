@@ -23,7 +23,7 @@ def main():
         for root, dirnames, filenames in os.walk(args.storage_dir):
             for filename in filenames:
                 if metric_regex.match(filename):
-                    root_path = root[len(args.storage_dir) + 1:]
+                    root_path = root[len(args.storage_dir):]
                     m_path = os.path.join(root_path, filename)
                     m_name, m_ext = os.path.splitext(m_path)
                     m_name = m_name.replace('/', '.')
