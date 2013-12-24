@@ -1,10 +1,13 @@
+import argparse
 import errno
 import fileinput
 import logging
+import os
 import sys
 
 from time import time
 
+from .aggregation import setAggregation, AGGREGATION
 from .list import listMetrics
 from .sieve import filterMetrics
 from .util import local_addresses, common_parser
@@ -182,3 +185,45 @@ def carbon_sync():
     print "  ========================================"
     print "  Total metrics synced: %s" % total_metrics
     print "  Total time: %ss" % elapsed
+
+
+def whisper_aggregate():
+    parser = argparse.ArgumentParser(
+        description='Set aggregation for whisper-backed metrics this carbon ' +
+                    'instance contains',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+
+    parser.add_argument(
+        '-f', '--metrics-file',
+        default='-',
+        help='File containing metric names and aggregation modes, or \'-\' ' +
+             'to read from STDIN')
+
+    parser.add_argument(
+        '-d', '--storage-dir',
+        default='/opt/graphite/storage/whisper',
+        help='Whisper storage directory')
+
+    args = parser.parse_args()
+
+    logging.basicConfig(level=logging.INFO)
+
+    if args.metrics_file and args.metrics_file[0] != '-':
+        fi = args.metrics_file
+        metrics = map(lambda s: s.strip(), fileinput.input(fi))
+    else:
+        metrics = map(lambda s: s.strip(), fileinput.input([]))
+
+    metrics_count = 0
+
+    for metric in metrics:
+        name, t = metric.strip().split('|')
+
+        mode = AGGREGATION[t]
+        if mode is not None:
+            cname = name.replace('.', '/')
+            path = os.path.join(args.storage_dir, cname + '.wsp')
+            metrics_count = metrics_count + setAggregation(path, mode)
+
+    logging.info('Successfully set aggregation mode for ' +
+                 '%d of %d metrics' % (metrics_count, len(metrics)))

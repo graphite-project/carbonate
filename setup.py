@@ -30,7 +30,7 @@ setup(
             'carbon-list = carbonate.cli:carbon_list',
             'carbon-hosts = carbonate.cli:carbon_hosts',
             'whisper-fill = carbonate.fill:main',
-            'whisper-aggregate = carbonate.aggregation:main'
+            'whisper-aggregate = carbonate.cli:whisper_aggregate'
             ]
         }
     )
