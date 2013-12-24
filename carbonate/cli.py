@@ -8,11 +8,12 @@ import sys
 from time import time
 
 from .aggregation import setAggregation, AGGREGATION
+from .fill import fill_archives
 from .list import listMetrics
-from .sieve import filterMetrics
-from .util import local_addresses, common_parser
 from .lookup import lookup
+from .sieve import filterMetrics
 from .sync import run_batch
+from .util import local_addresses, common_parser
 
 from .config import Config
 from .cluster import Cluster
@@ -227,3 +228,28 @@ def whisper_aggregate():
 
     logging.info('Successfully set aggregation mode for ' +
                  '%d of %d metrics' % (metrics_count, len(metrics)))
+
+
+def whisper_fill():
+    parser = argparse.ArgumentParser(
+        description='Backfill datapoints from one whisper file into another',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+
+    parser.add_argument(
+        'source',
+        metavar='SRC',
+        help='Whisper source file')
+
+    parser.add_argument(
+        'dest',
+        metavar='DST',
+        help='Whisper destination file')
+
+    args = parser.parse_args()
+
+    src = args.source
+    dst = args.dest
+
+    startFrom = time.time()
+
+    fill_archives(src, dst, startFrom)

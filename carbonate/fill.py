@@ -17,7 +17,6 @@
 from whisper import info, operator, fetch, update_many
 import itertools
 import time
-import argparse
 
 
 def fill(src, dst, tstart, tstop):
@@ -90,28 +89,3 @@ def fill_archives(src, dst, startFrom):
             start += step
 
         startFrom = fromTime
-
-
-def main():
-    parser = argparse.ArgumentParser(
-        description='Backfill datapoints from one whisper file into another',
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-
-    parser.add_argument(
-        'source',
-        metavar='SRC',
-        help='Whisper source file')
-
-    parser.add_argument(
-        'dest',
-        metavar='DST',
-        help='Whisper destination file')
-
-    args = parser.parse_args()
-
-    src = args.source
-    dst = args.dest
-
-    startFrom = time.time()
-
-    fill_archives(src, dst, startFrom)

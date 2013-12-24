@@ -29,7 +29,7 @@ setup(
             'carbon-sieve = carbonate.cli:carbon_sieve',
             'carbon-list = carbonate.cli:carbon_list',
             'carbon-hosts = carbonate.cli:carbon_hosts',
-            'whisper-fill = carbonate.fill:main',
+            'whisper-fill = carbonate.cli:whisper_fill',
             'whisper-aggregate = carbonate.cli:whisper_aggregate'
             ]
         }
