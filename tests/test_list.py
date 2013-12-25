@@ -34,6 +34,10 @@ class ListTest(unittest.TestCase):
         res = list(listMetrics(self.rootdir))
         self.assertEqual(res, self.expected_metrics)
 
+    def test_list_with_trailing_slash(self):
+        res = list(listMetrics(self.rootdir + '/'))
+        self.assertEqual(res, self.expected_metrics)
+
     @classmethod
     def tearDownClass(cls):
         os.system("rm -rf %s" % cls.rootdir)
