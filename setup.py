@@ -24,13 +24,13 @@ setup(
     #],
     entry_points = {
         'console_scripts': [
-            'carbon-lookup = carbonate.lookup:main',
-            'carbon-sync = carbonate.sync:main',
-            'carbon-sieve = carbonate.sieve:main',
-            'carbon-list = carbonate.list:main',
-            'carbon-hosts = carbonate.hosts:main',
-            'whisper-fill = carbonate.fill:main',
-            'whisper-aggregate = carbonate.aggregation:main'
+            'carbon-lookup = carbonate.cli:carbon_lookup',
+            'carbon-sync = carbonate.cli:carbon_sync',
+            'carbon-sieve = carbonate.cli:carbon_sieve',
+            'carbon-list = carbonate.cli:carbon_list',
+            'carbon-hosts = carbonate.cli:carbon_hosts',
+            'whisper-fill = carbonate.cli:whisper_fill',
+            'whisper-aggregate = carbonate.cli:whisper_aggregate'
             ]
         }
     )
