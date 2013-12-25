@@ -12,4 +12,4 @@ def listMetrics(storage_dir, metric_suffix='wsp'):
                 m_path = os.path.join(root_path, filename)
                 m_name, m_ext = os.path.splitext(m_path)
                 m_name = m_name.replace('/', '.')
-                print m_name
+                yield m_name
