@@ -5,6 +5,8 @@ import re
 def listMetrics(storage_dir, metric_suffix='wsp'):
     metric_regex = re.compile(".*\.%s$" % metric_suffix)
 
+    storage_dir = storage_dir.rstrip(os.sep)
+
     for root, dirnames, filenames in os.walk(storage_dir):
         for filename in filenames:
             if metric_regex.match(filename):
@@ -12,4 +14,4 @@ def listMetrics(storage_dir, metric_suffix='wsp'):
                 m_path = os.path.join(root_path, filename)
                 m_name, m_ext = os.path.splitext(m_path)
                 m_name = m_name.replace('/', '.')
-                print m_name
+                yield m_name
