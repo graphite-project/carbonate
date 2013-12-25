@@ -31,11 +31,11 @@ class ListTest(unittest.TestCase):
                 os.mkdir(os.path.join(cls.rootdir, f))
 
     def test_list(self):
-        res = list(listMetrics(self.rootdir))
+        res = sorted(list(listMetrics(self.rootdir)))
         self.assertEqual(res, self.expected_metrics)
 
     def test_list_with_trailing_slash(self):
-        res = list(listMetrics(self.rootdir + '/'))
+        res = sorted(list(listMetrics(self.rootdir + '/')))
         self.assertEqual(res, self.expected_metrics)
 
     @classmethod
