@@ -43,7 +43,8 @@ def carbon_list():
     args = parser.parse_args()
 
     try:
-        listMetrics(args.storage_dir)
+        for m in listMetrics(args.storage_dir):
+            print m
     except IOError as e:
         if e.errno == errno.EPIPE:
             pass  # we got killed, lol
