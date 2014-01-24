@@ -251,6 +251,6 @@ def whisper_fill():
     src = args.source
     dst = args.dest
 
-    startFrom = time.time()
+    startFrom = time()
 
     fill_archives(src, dst, startFrom)
