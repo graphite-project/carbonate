@@ -14,9 +14,32 @@
 
 # Work performed by author while working at Booking.com.
 
-from whisper import info, operator, fetch, update_many
+from whisper import info, fetch, update_many
+
+try:
+    from whisper import operator
+    HAS_OPERATOR = True
+except ImportError:
+    HAS_OPERATOR = False
+
 import itertools
 import time
+
+
+def itemgetter(*items):
+    if HAS_OPERATOR:
+        operator.itemgetter(items)
+    else:
+        if len(items) == 1:
+            item = items[0]
+
+            def g(obj):
+                return obj[item]
+        else:
+
+            def g(obj):
+                return tuple(obj[item] for item in items)
+    return g
 
 
 def fill(src, dst, tstart, tstop):
@@ -25,7 +48,7 @@ def fill(src, dst, tstart, tstop):
     srcHeader = info(src)
 
     srcArchives = srcHeader['archives']
-    srcArchives.sort(key=operator.itemgetter('retention'))
+    srcArchives.sort(key=itemgetter('retention'))
 
     # find oldest point in time, stored by both files
     srcTime = int(time.time()) - srcHeader['maxRetention']
