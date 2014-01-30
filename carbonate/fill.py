@@ -28,7 +28,7 @@ import time
 
 def itemgetter(*items):
     if HAS_OPERATOR:
-        operator.itemgetter(items)
+        return operator.itemgetter(*items)
     else:
         if len(items) == 1:
             item = items[0]
@@ -39,7 +39,7 @@ def itemgetter(*items):
 
             def g(obj):
                 return tuple(obj[item] for item in items)
-    return g
+        return g
 
 
 def fill(src, dst, tstart, tstop):
