@@ -1,7 +1,11 @@
 language: python
-python:
-  - "2.6"
-  - "2.7"
+env:
+  - TOXENV=py26
+  - TOXENV=py26-pre0_9_10
+  - TOXENV=py27
+  - TOXENV=py27-pre0_9_10
+  - TOXENV=lint
 install:
-  - script/bootstrap
-script: script/test
+  - pip install tox
+script: 
+  - tox

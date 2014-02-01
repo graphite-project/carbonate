@@ -25,7 +25,7 @@ class ConfigTest(unittest.TestCase):
         c = config.Config(self.real_config)
 
         expected = ['main', 'standalone']
-        self.assertEqual(c.clusters(), expected)
+        self.assertEqual(set(c.clusters()), set(expected))
 
     def test_config_ssh_user(self):
         c = config.Config(self.real_config)
