@@ -141,6 +141,11 @@ def carbon_sync():
         default=1000,
         help='Batch size for the rsync job')
 
+    parser.add_argument(
+        '--source-storage-dir',
+        default='/opt/graphite/storage/whisper',
+        help='Source storage dir')
+
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.INFO)
@@ -154,7 +159,7 @@ def carbon_sync():
 
     user = config.ssh_user()
     remote_ip = args.source_node
-    remote = "%s@%s:%s/" % (user, remote_ip, args.storage_dir)
+    remote = "%s@%s:%s/" % (user, remote_ip, args.source_storage_dir)
 
     metrics_to_sync = []
 
