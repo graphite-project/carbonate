@@ -251,6 +251,12 @@ def whisper_fill():
     src = args.source
     dst = args.dest
 
+    if not os.path.isfile(src):
+        raise SystemExit('Source file not found.')
+
+    if not os.path.isfile(dst):
+        raise SystemExit('Destination file not found.')
+
     startFrom = time()
 
     fill_archives(src, dst, startFrom)
