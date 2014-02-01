@@ -19,5 +19,4 @@ while read script ; do
   bin/$script --help >/dev/null
 done
 
-bin/flake8 carbonate
-bin/nosetests
+bin/tox

@@ -17,7 +17,7 @@ setup(
     url = "https://github.com/jssjr/carbonate",
     include_package_data = True,
     packages=find_packages(),
-    long_description = read('README.txt'),
+    long_description = read('README.md'),
     #install_requires = [
     #  "carbon >= 0.9.12",
     #  "whisper >= 0.9.12",
