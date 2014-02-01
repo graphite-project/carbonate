@@ -18,10 +18,10 @@ setup(
     include_package_data = True,
     packages=find_packages(),
     long_description = read('README.md'),
-    #install_requires = [
-    #  "carbon >= 0.9.12",
-    #  "whisper >= 0.9.12",
-    #],
+    install_requires = [
+      "carbon",
+      "whisper",
+    ],
     entry_points = {
         'console_scripts': [
             'carbon-lookup = carbonate.cli:carbon_lookup',
