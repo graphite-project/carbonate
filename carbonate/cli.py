@@ -146,6 +146,12 @@ def carbon_sync():
         default='/opt/graphite/storage/whisper',
         help='Source storage dir')
 
+    parser.add_argument(
+        '--rsync-options',
+        default='-azpS',
+        help='Pass option(s) to rsync. Make sure to use ' +
+        '"--rsync-options=" if option starts with \'-\'')
+
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.INFO)
@@ -177,13 +183,13 @@ def carbon_sync():
         if total_metrics % batch_size == 0:
             print "* Running batch %s-%s" \
                   % (total_metrics-batch_size+1, total_metrics)
-            run_batch(metrics_to_sync, remote, args.storage_dir)
+            run_batch(metrics_to_sync, remote, args.storage_dir, args.rsync_options)
             metrics_to_sync = []
 
     if len(metrics_to_sync) > 0:
         print "* Running batch %s-%s" \
               % (total_metrics-len(metrics_to_sync)+1, total_metrics)
-        run_batch(metrics_to_sync, remote, args.storage_dir)
+        run_batch(metrics_to_sync, remote, args.storage_dir, args.rsync_options)
 
     elapsed = (time() - start)
 
