@@ -109,6 +109,8 @@ optional arguments:
 ```
 usage: carbon-sync [-h] [-c CONFIG_FILE] [-C CLUSTER] [-f METRICS_FILE] -s
                    SOURCE_NODE [-d STORAGE_DIR] [-b BATCH_SIZE]
+                   [--source-storage-dir SOURCE_STORAGE_DIR]
+                   [--rsync-options [RSYNC_OPTIONS [RSYNC_OPTIONS ...]]]
 
 Sync local metrics using remote nodes in the cluster
 
@@ -128,6 +130,11 @@ optional arguments:
                         Storage dir (default: /opt/graphite/storage/whisper)
   -b BATCH_SIZE, --batch-size BATCH_SIZE
                         Batch size for the rsync job (default: 1000)
+  --source-storage-dir SOURCE_STORAGE_DIR
+                        Source storage dir (default:
+                        /opt/graphite/storage/whisper)
+  --rsync-options [RSYNC_OPTIONS [RSYNC_OPTIONS ...]]
+                        Pass option(s) to rsync (default: -azpS)
 ```
 
 ### whisper-aggregate
