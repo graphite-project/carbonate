@@ -12,14 +12,14 @@ from whisper import CorruptWhisperFile
 from .fill import fill_archives
 
 
-def sync_from_remote(sync_file, remote, staging):
+def sync_from_remote(sync_file, remote, staging, rsync_options):
     try:
         try:
             os.makedirs(os.path.dirname(staging))
         except OSError:
             pass
 
-        cmd = " ".join(['rsync', '-azpS', '--files-from',
+        cmd = " ".join(['rsync', rsync_options, '--files-from',
                         sync_file.name, remote, staging
                         ])
 
@@ -91,7 +91,7 @@ def heal_metric(source, dest):
             logging.warn("Failed to copy %s! %s" % (dest, e))
 
 
-def run_batch(metrics_to_sync, remote, local_storage):
+def run_batch(metrics_to_sync, remote, local_storage, rsync_options):
     staging_dir = mkdtemp()
     sync_file = NamedTemporaryFile(delete=False)
 
@@ -109,7 +109,7 @@ def run_batch(metrics_to_sync, remote, local_storage):
 
     rsync_start = time()
 
-    sync_from_remote(sync_file, remote, staging)
+    sync_from_remote(sync_file, remote, staging, rsync_options)
 
     rsync_elapsed = (time() - rsync_start)
 
