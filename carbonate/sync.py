@@ -99,12 +99,13 @@ def run_batch(metrics_to_sync, remote, local_storage, rsync_options):
 
     staging = "%s/" % (staging_dir)
 
-    for metric in metrics_to_sync:
-        staging_file = "%s/%s" % (staging_dir, metric)
-        local_file = "%s/%s" % (local_storage, metric)
+    for (old_metric, new_metric) in metrics_to_sync:
+        staging_file = "%s/%s" % (staging_dir, old_metric)
+        local_file = "%s/%s" % (local_storage, new_metric)
         metrics_to_heal.append((staging_file, local_file))
 
-    sync_file.write("\n".join(metrics_to_sync))
+    old_metrics_to_sync = zip(*metrics_to_sync)[0]
+    sync_file.write("\n".join(old_metrics_to_sync))
     sync_file.flush()
 
     rsync_start = time()

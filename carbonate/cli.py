@@ -163,6 +163,20 @@ def carbon_sync():
         help='Pass option(s) to rsync. Make sure to use ' +
         '"--rsync-options=" if option starts with \'-\'')
 
+    parser.add_argument(
+        '--rename',
+        action='store_true',
+        help='Accept a separator delimited pair of metric ' +
+        'names as input (e.g. old.metric,new.metric)). Old ' +
+        'metrics are *not* removed. See "--rename-separator=\',\'" ' +
+        'to control the separator char.')
+
+    parser.add_argument(
+        '--rename-separator',
+        default=',',
+        help='Character used to separate old and new metric ' +
+        'names when using "--rename"')
+
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.INFO)
@@ -186,10 +200,17 @@ def carbon_sync():
 
     for metric in fileinput.input(fi):
         total_metrics += 1
-        metric = metric.strip()
-        mpath = metric.replace('.', '/') + "." + "wsp"
+        if args.rename:
+            (old_metric, new_metric) = metric.split(args.rename_separator)
+        else:
+            (old_metric, new_metric) = (metric, metric)
 
-        metrics_to_sync.append(mpath)
+        old_metric = old_metric.strip()
+        new_metric = new_metric.strip()
+        old_mpath = old_metric.replace('.', '/') + "." + "wsp"
+        new_mpath = new_metric.replace('.', '/') + "." + "wsp"
+
+        metrics_to_sync.append((old_mpath, new_mpath))
 
         if total_metrics % batch_size == 0:
             print "* Running batch %s-%s" \
