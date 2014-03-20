@@ -62,12 +62,23 @@ def carbon_lookup():
         type=str,
         help='Full metric name to search for')
 
+    parser.add_argument(
+        '-s', '--short',
+        action='store_true',
+        help='Only display the address, without port and cluster name')
+
     args = parser.parse_args()
 
     config = Config(args.config_file)
     cluster = Cluster(config, args.cluster)
 
-    print "\n".join(lookup(str(args.metric[0]), cluster))
+    results = lookup(str(args.metric[0]), cluster)
+
+    if args.short:
+        for i, _ in enumerate(results):
+            results[i] = results[i].split(':')[0]
+
+    print "\n".join(results)
 
 
 def carbon_sieve():

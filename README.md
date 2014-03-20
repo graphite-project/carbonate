@@ -46,7 +46,7 @@ optional arguments:
 ### carbon-lookup
 
 ```
-usage: carbon-lookup [-h] [-c CONFIG_FILE] [-C CLUSTER] METRIC
+usage: carbon-lookup [-h] [-c CONFIG_FILE] [-C CLUSTER] [-s] METRIC
 
 Lookup where a metric lives in a carbon cluster
 
@@ -60,6 +60,8 @@ optional arguments:
                         /opt/graphite/conf/carbonate.conf)
   -C CLUSTER, --cluster CLUSTER
                         Cluster name (default: main)
+  -s, --short           Only display the address, without port and cluster
+                        name (default: False)
 ```
 
 ### carbon-list
