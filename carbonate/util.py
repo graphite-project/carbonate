@@ -1,3 +1,4 @@
+import os
 import socket
 import argparse
 
@@ -23,3 +24,8 @@ def common_parser(description='untitled'):
         help='Cluster name')
 
     return parser
+
+
+def metric_path(name, storage_dir='/opt/graphite/storage/whisper'):
+    metric = name.replace('.', '/')
+    return os.path.join(storage_dir, metric + '.wsp')

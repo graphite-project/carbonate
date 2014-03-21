@@ -8,6 +8,7 @@ import sys
 from time import time
 
 from .aggregation import setAggregation, AGGREGATION
+from .delete import deleteMetric
 from .fill import fill_archives
 from .list import listMetrics
 from .lookup import lookup
@@ -17,6 +18,39 @@ from .util import local_addresses, common_parser
 
 from .config import Config
 from .cluster import Cluster
+
+
+def carbon_delete():
+    parser = common_parser('Trash metrics on the local node')
+
+    parser.add_argument(
+        '-d', '--storage-dir',
+        default='/opt/graphite/storage/whisper',
+        help='Storage dir')
+
+    parser.add_argument(
+        '-t', '--trash-dir',
+        default='/opt/graphite/storage/whisper/trash',
+        help='Trash dir')
+
+    parser.add_argument(
+        '-f', '--metrics-file',
+        default='-',
+        help='File containing metric names to filter, or \'-\' ' +
+             'to read from STDIN')
+
+    args = parser.parse_args()
+
+    if args.metrics_file and args.metrics_file[0] != '-':
+        fi = args.metrics_file
+    else:
+        fi = []
+
+    try:
+        for metric in fileinput.input(fi):
+            deleteMetric(metric, args.trash_dir)
+    except KeyboardInterrupt:
+        sys.exit(1)
 
 
 def carbon_hosts():
