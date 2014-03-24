@@ -101,6 +101,17 @@ def carbon_sieve():
         action='store_true',
         help='Invert the sieve, match metrics that do NOT belong to a node')
 
+    parser.add_argument(
+        '--field',
+        default=0,
+        help='Input field to sieve if multiple metrics per-line of input. ' +
+        'Note that fields are indexed starting with 1.')
+
+    parser.add_argument(
+        '--field-separator',
+        default=',',
+        help='Character used to separate metric names when using "--field"')
+
     args = parser.parse_args()
 
     config = Config(args.config_file)
@@ -119,7 +130,12 @@ def carbon_sieve():
 
     try:
         for metric in fileinput.input(fi):
-            m = metric.strip()
+            if args.field == 0:
+                m = metric.strip()
+            else:
+                fields = metric.split(args.field_separator)
+                m = fields[args.field].strip()
+
             for match in filterMetrics([m], match_dests, cluster, invert):
                 print metric.strip()
     except KeyboardInterrupt:
