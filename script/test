@@ -6,6 +6,7 @@ set -e
 
 # Testing scripts
 cat << EOF |
+carbon-delete
 carbon-lookup
 carbon-sync
 carbon-sieve
