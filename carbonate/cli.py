@@ -134,7 +134,10 @@ def carbon_sieve():
                 m = metric.strip()
             else:
                 fields = metric.split(args.field_separator)
-                m = fields[int(args.field)].strip()
+                try:
+                    m = fields[int(args.field)-1].strip()
+                except IndexError:
+                    raise SystemExit("Field index is out-of-bounds")
 
             for match in filterMetrics([m], match_dests, cluster, invert):
                 print metric.strip()
