@@ -103,7 +103,7 @@ def carbon_sieve():
 
     parser.add_argument(
         '--field',
-        default=0,
+        type=int,
         help='Input field to sieve if multiple metrics per-line of input. ' +
         'Note that fields are indexed starting with 1.')
 
@@ -130,7 +130,7 @@ def carbon_sieve():
 
     try:
         for metric in fileinput.input(fi):
-            if args.field == 0:
+            if args.field is None:
                 m = metric.strip()
             else:
                 fields = metric.split(args.field_separator)
