@@ -134,7 +134,7 @@ def carbon_sieve():
                 m = metric.strip()
             else:
                 fields = metric.split(args.field_separator)
-                m = fields[args.field].strip()
+                m = fields[int(args.field)].strip()
 
             for match in filterMetrics([m], match_dests, cluster, invert):
                 print metric.strip()
