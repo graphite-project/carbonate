@@ -127,8 +127,8 @@ def carbon_sieve():
 
     parser.add_argument(
         '-n', '--node',
-        help='Filter for metrics belonging to this node. Uses local addresses ' +
-        'if not provided.')
+        help='Filter for metrics belonging to this node. Uses local ' +
+        'addresses if not provided.')
 
     parser.add_argument(
         '-I', '--invert',
