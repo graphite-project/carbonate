@@ -1,4 +1,5 @@
 import os
+import errno
 from time import time
 
 from .util import metric_path
@@ -18,4 +19,9 @@ def deleteMetric(metric,
             pass
 
         startFrom = time()
-        fill_archives(oldMetric, newMetric, startFrom)
+        try:
+            fill_archives(oldMetric, newMetric, startFrom)
+            os.unlink(oldMetric)
+        except OSError, e:
+            if e.errno != errno.ENOENT:
+                raise

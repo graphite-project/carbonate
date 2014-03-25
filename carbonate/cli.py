@@ -21,7 +21,7 @@ from .cluster import Cluster
 
 
 def carbon_delete():
-    parser = common_parser('Trash metrics on the local node')
+    parser = common_parser('Soft delete metrics on the local node')
 
     parser.add_argument(
         '-d', '--storage-dir',
