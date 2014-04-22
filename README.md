@@ -86,7 +86,7 @@ optional arguments:
 
 ```
 usage: carbon-sieve [-h] [-c CONFIG_FILE] [-C CLUSTER] [-f METRICS_FILE]
-                    [-n NODE] [-I]
+                    [-n NODE] [-I] [-l]
 
 Given a list of metrics, output those that belong to a node
 
@@ -104,6 +104,8 @@ optional arguments:
                         self)
   -I, --invert          Invert the sieve, match metrics that do NOT belong to
                         a node (default: False)
+  -l, --long            Filter on long address with port and cluster name
+                        (default: False)
 ```
 
 ### carbon-sync

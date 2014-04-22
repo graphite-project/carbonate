@@ -101,11 +101,18 @@ def carbon_sieve():
         action='store_true',
         help='Invert the sieve, match metrics that do NOT belong to a node')
 
+    parser.add_argument(
+        '-l', '--long',
+        action='store_true',
+        dest='filter_long',
+        help='Filter on long address with port and cluster name')
+
     args = parser.parse_args()
 
     config = Config(args.config_file)
     cluster = Cluster(config, args.cluster)
     invert = args.invert
+    filter_long = args.filter_long
 
     if args.metrics_file and args.metrics_file[0] != '-':
         fi = args.metrics_file
@@ -120,7 +127,8 @@ def carbon_sieve():
     try:
         for metric in fileinput.input(fi):
             m = metric.strip()
-            for match in filterMetrics([m], match_dests, cluster, invert):
+            for match in filterMetrics([m], match_dests, cluster, invert,
+                                       filter_long):
                 print metric.strip()
     except KeyboardInterrupt:
         sys.exit(1)
