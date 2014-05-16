@@ -93,13 +93,24 @@ def carbon_sieve():
 
     parser.add_argument(
         '-n', '--node',
-        default="self",
-        help='Filter for metrics belonging to this node')
+        help='Filter for metrics belonging to this node. Uses local addresses ' +
+        'if not provided.')
 
     parser.add_argument(
         '-I', '--invert',
         action='store_true',
         help='Invert the sieve, match metrics that do NOT belong to a node')
+
+    parser.add_argument(
+        '--field',
+        type=int,
+        help='Input field to sieve if multiple metrics per-line of input. ' +
+        'Note that fields are indexed starting with 1.')
+
+    parser.add_argument(
+        '--field-separator',
+        default=',',
+        help='Character used to separate metric names when using "--field"')
 
     args = parser.parse_args()
 
@@ -119,7 +130,15 @@ def carbon_sieve():
 
     try:
         for metric in fileinput.input(fi):
-            m = metric.strip()
+            if args.field is None:
+                m = metric.strip()
+            else:
+                fields = metric.split(args.field_separator)
+                try:
+                    m = fields[int(args.field)-1].strip()
+                except IndexError:
+                    raise SystemExit("Field index is out-of-bounds")
+
             for match in filterMetrics([m], match_dests, cluster, invert):
                 print metric.strip()
     except KeyboardInterrupt:
@@ -163,6 +182,20 @@ def carbon_sync():
         help='Pass option(s) to rsync. Make sure to use ' +
         '"--rsync-options=" if option starts with \'-\'')
 
+    parser.add_argument(
+        '--rename',
+        action='store_true',
+        help='Accept a separator delimited pair of metric ' +
+        'names as input (e.g. old.metric,new.metric)). Old ' +
+        'metrics are *not* removed. See "--rename-separator=\',\'" ' +
+        'to control the separator char.')
+
+    parser.add_argument(
+        '--rename-separator',
+        default=',',
+        help='Character used to separate old and new metric ' +
+        'names when using "--rename"')
+
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.INFO)
@@ -186,10 +219,17 @@ def carbon_sync():
 
     for metric in fileinput.input(fi):
         total_metrics += 1
-        metric = metric.strip()
-        mpath = metric.replace('.', '/') + "." + "wsp"
+        if args.rename:
+            (old_metric, new_metric) = metric.split(args.rename_separator)
+        else:
+            (old_metric, new_metric) = (metric, metric)
 
-        metrics_to_sync.append(mpath)
+        old_metric = old_metric.strip()
+        new_metric = new_metric.strip()
+        old_mpath = old_metric.replace('.', '/') + "." + "wsp"
+        new_mpath = new_metric.replace('.', '/') + "." + "wsp"
+
+        metrics_to_sync.append((old_mpath, new_mpath))
 
         if total_metrics % batch_size == 0:
             print "* Running batch %s-%s" \
