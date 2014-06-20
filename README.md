@@ -8,6 +8,13 @@ Graphite clusters are pretty cool. Here are some primitive tools to help you man
 
 All of the tools support two common arguments; the path to a config file, and the name of the cluster. Using these tools alongside a config file that describes your graphite clusters you can build up scripts to manage your metrics. Some of the tools could easily be replaced with one-liners in shell, but exist here for convenience and readability. The goal is to provide fast, predictable utilities that can easily be composed into more advanced tooling.
 
+## Install
+[Carbonate is available from Python official third party repository](https://pypi.python.org/pypi/carbonate/0.2.1) (aka PyPi) and as such can be installed via regular Python package managers.
+Note that you might have to install a python package manager (e.g. apt-get install python-setuptools on a ubuntu host)
+
+```
+pip install carbonate
+```
 ## The Config
 
 Carbonate expects a configuration file that defines the clusters in your environment. The default config file is located at `/opt/graphite/conf/carbonate.conf` or can be provided on the command line. The default cluster is named 'main'.
