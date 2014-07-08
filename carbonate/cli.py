@@ -243,13 +243,16 @@ def whisper_aggregate():
     metrics_count = 0
 
     for metric in metrics:
-        name, t = metric.strip().split('|')
+        try:
+            name, t = metric.strip().split('|')
 
-        mode = AGGREGATION[t]
-        if mode is not None:
-            cname = name.replace('.', '/')
-            path = os.path.join(args.storage_dir, cname + '.wsp')
-            metrics_count = metrics_count + setAggregation(path, mode)
+            mode = AGGREGATION[t]
+            if mode is not None:
+                cname = name.replace('.', '/')
+                path = os.path.join(args.storage_dir, cname + '.wsp')
+                metrics_count = metrics_count + setAggregation(path, mode)
+        except ValueError, exc:
+            logging.warning("Unable to parse '%s' (%s)" % (metric, str(exc)))
 
     logging.info('Successfully set aggregation mode for ' +
                  '%d of %d metrics' % (metrics_count, len(metrics)))
