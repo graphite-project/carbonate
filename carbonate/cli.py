@@ -207,6 +207,23 @@ def carbon_sync():
     print "  Total time: %ss" % elapsed
 
 
+def carbon_path():
+    # Use common_parser for consistency, even though we do not use any config
+    # file options at present.
+    parser = common_parser('Transform metric paths to (or from) filesystem paths')
+
+    parser.add_argument(
+        '-f', '--metrics-file',
+        default='-',
+        help='File containing metric names to transform to file paths, or \'-\' ' +
+             'to read from STDIN')
+
+    args = parser.parse_args()
+    metrics = metrics_from_args(args)
+    for metric in metrics:
+        print metric_to_fs(metric)
+
+
 def whisper_aggregate():
     parser = argparse.ArgumentParser(
         description='Set aggregation for whisper-backed metrics this carbon ' +
