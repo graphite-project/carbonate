@@ -1,3 +1,4 @@
+import os
 import socket
 import argparse
 
@@ -23,3 +24,10 @@ def common_parser(description='untitled'):
         help='Cluster name')
 
     return parser
+
+
+def metric_to_fs(path, prepend=None):
+    filepath = path.replace('.', '/') + "." + "wsp"
+    if prepend:
+        filepath = os.path.join(prepend, filepath)
+    return filepath

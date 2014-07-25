@@ -13,7 +13,7 @@ from .list import listMetrics
 from .lookup import lookup
 from .sieve import filterMetrics
 from .sync import run_batch
-from .util import local_addresses, common_parser
+from .util import local_addresses, common_parser, metric_to_fs
 
 from .config import Config
 from .cluster import Cluster
@@ -187,7 +187,7 @@ def carbon_sync():
     for metric in fileinput.input(fi):
         total_metrics += 1
         metric = metric.strip()
-        mpath = metric.replace('.', '/') + "." + "wsp"
+        mpath = metric_to_fs(metric)
 
         metrics_to_sync.append(mpath)
 
@@ -247,8 +247,7 @@ def whisper_aggregate():
 
         mode = AGGREGATION[t]
         if mode is not None:
-            cname = name.replace('.', '/')
-            path = os.path.join(args.storage_dir, cname + '.wsp')
+            path = metric_to_fs(name, prepend=args.storage_dir)
             metrics_count = metrics_count + setAggregation(path, mode)
 
     logging.info('Successfully set aggregation mode for ' +
