@@ -1,3 +1,4 @@
+import fileinput
 import os
 import socket
 import argparse
@@ -24,6 +25,12 @@ def common_parser(description='untitled'):
         help='Cluster name')
 
     return parser
+
+
+def metrics_from_args(args):
+    arg = args.metrics_file
+    fi = arg if (arg and arg[0] != '-') else []
+    return map(lambda s: s.strip(), fileinput.input(fi))
 
 
 def metric_to_fs(path, prepend=None):

@@ -1,6 +1,5 @@
 import argparse
 import errno
-import fileinput
 import logging
 import os
 import sys
@@ -13,7 +12,9 @@ from .list import listMetrics
 from .lookup import lookup
 from .sieve import filterMetrics
 from .sync import run_batch
-from .util import local_addresses, common_parser, metric_to_fs
+from .util import (
+    local_addresses, common_parser, metric_to_fs, metrics_from_args,
+)
 
 from .config import Config
 from .cluster import Cluster
@@ -107,10 +108,7 @@ def carbon_sieve():
     cluster = Cluster(config, args.cluster)
     invert = args.invert
 
-    if args.metrics_file and args.metrics_file[0] != '-':
-        fi = args.metrics_file
-    else:
-        fi = []
+    metrics = metrics_from_args(args)
 
     if args.node:
         match_dests = [args.node]
@@ -118,7 +116,7 @@ def carbon_sieve():
         match_dests = local_addresses()
 
     try:
-        for metric in fileinput.input(fi):
+        for metric in metrics:
             m = metric.strip()
             for match in filterMetrics([m], match_dests, cluster, invert):
                 print metric.strip()
@@ -167,11 +165,6 @@ def carbon_sync():
 
     logging.basicConfig(level=logging.INFO)
 
-    if args.metrics_file and args.metrics_file[0] != '-':
-        fi = args.metrics_file
-    else:
-        fi = []
-
     config = Config(args.config_file)
 
     user = config.ssh_user()
@@ -179,12 +172,13 @@ def carbon_sync():
     remote = "%s@%s:%s/" % (user, remote_ip, args.source_storage_dir)
 
     metrics_to_sync = []
+    metrics = metrics_from_args(args)
 
     start = time()
     total_metrics = 0
     batch_size = int(args.batch_size)
 
-    for metric in fileinput.input(fi):
+    for metric in metrics:
         total_metrics += 1
         metric = metric.strip()
         mpath = metric_to_fs(metric)
@@ -234,11 +228,7 @@ def whisper_aggregate():
 
     logging.basicConfig(level=logging.INFO)
 
-    if args.metrics_file and args.metrics_file[0] != '-':
-        fi = args.metrics_file
-        metrics = map(lambda s: s.strip(), fileinput.input(fi))
-    else:
-        metrics = map(lambda s: s.strip(), fileinput.input([]))
+    metrics = metrics_from_args(args)
 
     metrics_count = 0
 
