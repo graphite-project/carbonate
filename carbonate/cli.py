@@ -13,7 +13,8 @@ from .lookup import lookup
 from .sieve import filterMetrics
 from .sync import run_batch
 from .util import (
-    local_addresses, common_parser, metric_to_fs, metrics_from_args,
+    local_addresses, common_parser, metric_to_fs, fs_to_metric,
+    metrics_from_args,
 )
 
 from .config import Config
@@ -218,10 +219,17 @@ def carbon_path():
         help='File containing metric names to transform to file paths, or \'-\' ' +
              'to read from STDIN')
 
+    parser.add_argument(
+        '-r', '--reverse',
+        action='store_true',
+        help='Transform from file paths to metric paths instead of the reverse'
+    )
+
     args = parser.parse_args()
     metrics = metrics_from_args(args)
+    func = fs_to_metric if args.reverse else metric_to_fs
     for metric in metrics:
-        print metric_to_fs(metric)
+        print func(metric)
 
 
 def whisper_aggregate():
