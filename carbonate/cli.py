@@ -223,7 +223,7 @@ def carbon_path():
     parser.add_argument(
         '-r', '--reverse',
         action='store_true',
-        help='Transform from file paths to metric paths instead of the reverse'
+        help='Transform from file paths to metric paths'
     )
 
     parser.add_argument(
