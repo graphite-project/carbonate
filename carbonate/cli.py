@@ -215,13 +215,15 @@ def carbon_sync():
 def carbon_path():
     # Use common_parser for consistency, even though we do not use any config
     # file options at present.
-    parser = common_parser('Transform metric paths to (or from) filesystem paths')
+    parser = common_parser(
+        'Transform metric paths to (or from) filesystem paths'
+    )
 
     parser.add_argument(
         '-f', '--metrics-file',
         default='-',
-        help='File containing metric names to transform to file paths, or \'-\' ' +
-             'to read from STDIN')
+        help='File containing metric names to transform to file paths, or ' +
+        '\'-\' to read from STDIN')
 
     parser.add_argument(
         '-r', '--reverse',
