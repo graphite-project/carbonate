@@ -139,6 +139,32 @@ optional arguments:
                         Pass option(s) to rsync (default: -azpS)
 ```
 
+### carbon-path
+
+```
+usage: carbon-path [-h] [-c CONFIG_FILE] [-C CLUSTER] [-f METRICS_FILE] [-r]
+                   [-p] [-d STORAGE_DIR]
+
+Transform metric paths to (or from) filesystem paths
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -c CONFIG_FILE, --config-file CONFIG_FILE
+                        Config file to use (default:
+                        /opt/graphite/conf/carbonate.conf)
+  -C CLUSTER, --cluster CLUSTER
+                        Cluster name (default: main)
+  -f METRICS_FILE, --metrics-file METRICS_FILE
+                        File containing metric names to transform to file
+                        paths, or '-' to read from STDIN (default: -)
+  -r, --reverse         Transform from file paths to metric paths (default:
+                        False)
+  -p, --prepend         Prepend storage dir to file paths (default: False)
+  -d STORAGE_DIR, --storage-dir STORAGE_DIR
+                        Whisper storage directory to prepend when -p given
+                        (default: /opt/graphite/storage/whisper)
+```
+
 ### whisper-aggregate
 
 ```
