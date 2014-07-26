@@ -22,6 +22,9 @@ from .config import Config
 from .cluster import Cluster
 
 
+STORAGE_DIR = '/opt/graphite/storage/whisper'
+
+
 def carbon_hosts():
     parser = common_parser('Return the addresses for all nodes in a cluster')
 
@@ -40,7 +43,7 @@ def carbon_list():
 
     parser.add_argument(
         '-d', '--storage-dir',
-        default='/opt/graphite/storage/whisper',
+        default=STORAGE_DIR,
         help='Storage dir')
 
     args = parser.parse_args()
@@ -144,7 +147,7 @@ def carbon_sync():
 
     parser.add_argument(
         '-d', '--storage-dir',
-        default='/opt/graphite/storage/whisper',
+        default=STORAGE_DIR,
         help='Storage dir')
 
     parser.add_argument(
@@ -154,7 +157,7 @@ def carbon_sync():
 
     parser.add_argument(
         '--source-storage-dir',
-        default='/opt/graphite/storage/whisper',
+        default=STORAGE_DIR,
         help='Source storage dir')
 
     parser.add_argument(
@@ -233,7 +236,7 @@ def carbon_path():
 
     parser.add_argument(
         '-d', '--storage-dir',
-        default='/opt/graphite/storage/whisper',
+        default=STORAGE_DIR,
         help='Whisper storage directory to prepend when -p given')
 
     args = parser.parse_args()
@@ -261,7 +264,7 @@ def whisper_aggregate():
 
     parser.add_argument(
         '-d', '--storage-dir',
-        default='/opt/graphite/storage/whisper',
+        default=STORAGE_DIR,
         help='Whisper storage directory')
 
     args = parser.parse_args()
