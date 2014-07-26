@@ -4,6 +4,7 @@ import logging
 import os
 import sys
 
+from functools import partial
 from time import time
 
 from .aggregation import setAggregation, AGGREGATION
@@ -225,9 +226,23 @@ def carbon_path():
         help='Transform from file paths to metric paths instead of the reverse'
     )
 
+    parser.add_argument(
+        '-p', '--prepend',
+        action='store_true',
+        help='Prepend storage dir to file paths')
+
+    parser.add_argument(
+        '-d', '--storage-dir',
+        default='/opt/graphite/storage/whisper',
+        help='Whisper storage directory to prepend when -p given')
+
     args = parser.parse_args()
     metrics = metrics_from_args(args)
-    func = fs_to_metric if args.reverse else metric_to_fs
+    if args.reverse:
+        func = fs_to_metric
+    else:
+        prepend = args.storage_dir if args.prepend else None
+        func = partial(metric_to_fs, prepend=prepend)
     for metric in metrics:
         print func(metric)
 
