@@ -172,6 +172,36 @@ optional arguments:
                         (default: /opt/graphite/storage/whisper)
 ```
 
+### carbon-stale
+
+```
+usage: carbon-stale [-h] [-c CONFIG_FILE] [-C CLUSTER] [-f METRICS_FILE] [-r]
+                    [-d STORAGE_DIR] [-l HOURS] [-s]
+
+Given a list of metrics, select those which appear stale
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -c CONFIG_FILE, --config-file CONFIG_FILE
+                        Config file to use (default:
+                        /opt/graphite/conf/carbonate.conf)
+  -C CLUSTER, --cluster CLUSTER
+                        Cluster name (default: main)
+  -f METRICS_FILE, --metrics-file METRICS_FILE
+                        File containing metric names to filter against, or '-'
+                        to read from STDIN (default: -)
+  -r, --reverse         Output metrics which are not stale instead (default:
+                        False)
+  -d STORAGE_DIR, --storage-dir STORAGE_DIR
+                        Whisper storage directory to look in when testing
+                        metrics (default: /opt/graphite/storage/whisper)
+  -l HOURS, --limit=HOURS Definition of staleness, in hours (default: 24)
+  -s, --stat            Use filesystem stat() call instead of reading whisper
+                        data (default: False)
+  -p, --paths           Print filesystem paths instead of metric names
+                        (default: False)
+```
+
 ### whisper-aggregate
 
 ```
