@@ -252,6 +252,54 @@ def carbon_path():
         print func(metric)
 
 
+def carbon_stale():
+    # Use common_parser for consistency, even though we do not use any config
+    # file options at present.
+    parser = common_parser(
+        'Transform metric paths to (or from) filesystem paths'
+    )
+
+    parser.add_argument(
+        '-f', '--metrics-file',
+        default='-',
+        help='File containing metric names to transform to file paths, or ' +
+        '\'-\' to read from STDIN')
+
+    parser.add_argument(
+        '-r', '--reverse',
+        action='store_true',
+        help='Output metrics which are not stale instead')
+
+    parser.add_argument(
+        '-d', '--storage-dir',
+        default=STORAGE_DIR,
+        help='Whisper storage directory to prepend when -p given')
+
+    parser.add_argument(
+        '-l', '--limit', metavar='HOURS',
+        type=int, default=24,
+        help='Definition of staleness, in hours')
+
+    parser.add_argument(
+        '-s', '--stat',
+        action='store_true',
+        help='Use filesystem stat() call instead of whisper data')
+
+    parser.add_argument(
+        '-p', '--paths',
+        action='store_true',
+        help='Print filesystem paths instead of metric names')
+
+    args = parser.parse_args()
+    metrics = metrics_from_args(args)
+    # define utils (or new module) funcs for staleness
+    # iterate over map(partial(metric_to_fs, prepend=args.storage_dir),
+    # metrics)
+    # test = one of those functions partial'd with args.limit
+    # then test with or without 'not' based on args.reverse
+    # finally print x if args.paths else fs_to_metric(x)
+
+
 def whisper_aggregate():
     parser = argparse.ArgumentParser(
         description='Set aggregation for whisper-backed metrics this carbon ' +
