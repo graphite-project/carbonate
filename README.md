@@ -288,6 +288,37 @@ LOCAL_IP="$1"
 carbon-list | carbon-sieve -I -n $LOCAL_IP
 ```
 
+### Listing metrics that have stopped updating
+
+Metrics with whisper data that is entirely blank for the last 2 hours:
+
+```
+carbon-list | carbon-stale --limit=2
+```
+
+Metrics whose metrics files are untouched for 48 hours or more (functionally
+identical to `find /your/data/dir -type f -mtime +2`):
+
+```
+carbon-list | carbon-stale --stat --limit=48
+```
+
+More interesting is if you use ``carbon-stale``, then sieve to identify stale
+metrics that don't belong here (vs un-stale metrics that *do* belong here but
+are misreported in carbon-sieve due to things like doubled-up periods in metric
+paths due to broken collectors. It's a thing.)
+
+```
+carbon-list | carbon-stale --limit=48 | carbon-sieve -I -n $LOCAL_IP
+```
+
+To print file paths for use with e.g. `xargs rm` or whatnot, use `-p`:
+
+```
+carbon-list | carbon-stale -p | xargs -n 100 rm
+```
+
+
 # License and warnings
 
 These tools should be considered beta quality right now. Tests exist for most functionality, but there is still significant work to be done to make them bullet-proof. However, instead of sitting on this code, I'd rather release it and allow others to provide input and help guide the development. So, expect a few bugs and please help me fix them!
