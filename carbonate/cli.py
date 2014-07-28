@@ -239,15 +239,19 @@ def carbon_path():
     parser.add_argument(
         '-d', '--storage-dir',
         default=STORAGE_DIR,
-        help='Whisper storage directory to prepend when -p given')
+        help='Whisper storage directory to prepend or strip')
 
     args = parser.parse_args()
     metrics = metrics_from_args(args)
     if args.reverse:
-        func = fs_to_metric
+        # Always try to strip storage dir when doing fs->metric.
+        # Nobody would ever not want that.
+        func = partial(fs_to_metric, prepend=args.storage_dir)
     else:
+        # Only give non-empty prepend if -p given, when metric->fs
         prepend = args.storage_dir if args.prepend else None
         func = partial(metric_to_fs, prepend=prepend)
+
     for metric in metrics:
         print func(metric)
 
