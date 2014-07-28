@@ -286,9 +286,9 @@ def carbon_stale():
         help='Definition of staleness, in hours')
 
     parser.add_argument(
-        '-s', '--stat',
+        '-w', '--whisper',
         action='store_true',
-        help='Use filesystem stat() call instead of whisper data')
+        help='Use whisper data instead of filesystem stat() call')
 
     parser.add_argument(
         '-p', '--paths',
@@ -299,7 +299,7 @@ def carbon_stale():
     metrics = metrics_from_args(args)
     prefix = args.storage_dir
     for path in map(partial(metric_to_fs, prepend=prefix), metrics):
-        passed = (stat if args.stat else data)(path, args.limit)
+        passed = (data if args.whisper else stat)(path, args.limit)
         value = path if args.paths else fs_to_metric(path, prepend=prefix)
         if (not passed) if args.reverse else passed:
             print value

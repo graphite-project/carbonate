@@ -197,7 +197,7 @@ optional arguments:
                         (default: /opt/graphite/storage/whisper)
   -l HOURS, --limit HOURS
                         Definition of staleness, in hours (default: 24)
-  -s, --stat            Use filesystem stat() call instead of whisper data
+  -w, --whisper         Use whisper data instead of filesystem stat() call
                         (default: False)
   -p, --paths           Print filesystem paths instead of metric names
                         (default: False)
@@ -291,17 +291,19 @@ carbon-list | carbon-sieve -I -n $LOCAL_IP
 
 ### Listing metrics that have stopped updating
 
-Metrics with whisper data that is entirely blank for the last 2 hours:
+Metrics with whisper data that is entirely blank for the last 2 hours (perhaps
+useful if you suspect issues with fs timestamps or carbon clients writing in 'the
+future'):
 
 ```
-carbon-list | carbon-stale --limit=2
+carbon-list | carbon-stale --whisper --limit=2
 ```
 
-Metrics whose metrics files are untouched for 48 hours or more (functionally
+Metrics whose metrics files appear untouched for 48 hours or more (functionally
 identical to `find /your/data/dir -type f -mtime +2`):
 
 ```
-carbon-list | carbon-stale --stat --limit=48
+carbon-list | carbon-stale --limit=48
 ```
 
 More interesting is if you use ``carbon-stale``, then sieve to identify stale
