@@ -12,6 +12,7 @@ from .fill import fill_archives
 from .list import listMetrics
 from .lookup import lookup
 from .sieve import filterMetrics
+from .stale import data, stat
 from .sync import run_batch
 from .util import (
     local_addresses, common_parser, metric_to_fs, fs_to_metric,
@@ -296,12 +297,12 @@ def carbon_stale():
 
     args = parser.parse_args()
     metrics = metrics_from_args(args)
-    # define utils (or new module) funcs for staleness
-    # iterate over map(partial(metric_to_fs, prepend=args.storage_dir),
-    # metrics)
-    # test = one of those functions partial'd with args.limit
-    # then test with or without 'not' based on args.reverse
-    # finally print x if args.paths else fs_to_metric(x)
+    prefix = args.storage_dir
+    for path in map(partial(metric_to_fs, prepend=prefix), metrics):
+        passed = (stat if args.stat else data)(path, args.limit)
+        value = path if args.paths else fs_to_metric(path, prepend=prefix)
+        if (not passed) if args.reverse else passed:
+            print value
 
 
 def whisper_aggregate():
