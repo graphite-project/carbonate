@@ -1,10 +1,10 @@
 import argparse
 import errno
-import fileinput
 import logging
 import os
 import sys
 
+from functools import partial
 from time import time
 
 from .aggregation import setAggregation, AGGREGATION
@@ -13,10 +13,16 @@ from .list import listMetrics
 from .lookup import lookup
 from .sieve import filterMetrics
 from .sync import run_batch
-from .util import local_addresses, common_parser
+from .util import (
+    local_addresses, common_parser, metric_to_fs, fs_to_metric,
+    metrics_from_args,
+)
 
 from .config import Config
 from .cluster import Cluster
+
+
+STORAGE_DIR = '/opt/graphite/storage/whisper'
 
 
 def carbon_hosts():
@@ -37,7 +43,7 @@ def carbon_list():
 
     parser.add_argument(
         '-d', '--storage-dir',
-        default='/opt/graphite/storage/whisper',
+        default=STORAGE_DIR,
         help='Storage dir')
 
     args = parser.parse_args()
@@ -118,10 +124,7 @@ def carbon_sieve():
     cluster = Cluster(config, args.cluster)
     invert = args.invert
 
-    if args.metrics_file and args.metrics_file[0] != '-':
-        fi = args.metrics_file
-    else:
-        fi = []
+    metrics = metrics_from_args(args)
 
     if args.node:
         match_dests = [args.node]
@@ -129,7 +132,7 @@ def carbon_sieve():
         match_dests = local_addresses()
 
     try:
-        for metric in fileinput.input(fi):
+        for metric in metrics:
             if args.field is None:
                 m = metric.strip()
             else:
@@ -163,7 +166,7 @@ def carbon_sync():
 
     parser.add_argument(
         '-d', '--storage-dir',
-        default='/opt/graphite/storage/whisper',
+        default=STORAGE_DIR,
         help='Storage dir')
 
     parser.add_argument(
@@ -173,7 +176,7 @@ def carbon_sync():
 
     parser.add_argument(
         '--source-storage-dir',
-        default='/opt/graphite/storage/whisper',
+        default=STORAGE_DIR,
         help='Source storage dir')
 
     parser.add_argument(
@@ -200,11 +203,6 @@ def carbon_sync():
 
     logging.basicConfig(level=logging.INFO)
 
-    if args.metrics_file and args.metrics_file[0] != '-':
-        fi = args.metrics_file
-    else:
-        fi = []
-
     config = Config(args.config_file)
 
     user = config.ssh_user()
@@ -212,12 +210,13 @@ def carbon_sync():
     remote = "%s@%s:%s/" % (user, remote_ip, args.source_storage_dir)
 
     metrics_to_sync = []
+    metrics = metrics_from_args(args)
 
     start = time()
     total_metrics = 0
     batch_size = int(args.batch_size)
 
-    for metric in fileinput.input(fi):
+    for metric in metrics:
         total_metrics += 1
         if args.rename:
             (old_metric, new_metric) = metric.split(args.rename_separator)
@@ -226,8 +225,8 @@ def carbon_sync():
 
         old_metric = old_metric.strip()
         new_metric = new_metric.strip()
-        old_mpath = old_metric.replace('.', '/') + "." + "wsp"
-        new_mpath = new_metric.replace('.', '/') + "." + "wsp"
+        old_mpath = metric_to_fs(old_metric)
+        new_mpath = metric_to_fs(new_metric)
 
         metrics_to_sync.append((old_mpath, new_mpath))
 
@@ -253,6 +252,46 @@ def carbon_sync():
     print "  Total time: %ss" % elapsed
 
 
+def carbon_path():
+    # Use common_parser for consistency, even though we do not use any config
+    # file options at present.
+    parser = common_parser(
+        'Transform metric paths to (or from) filesystem paths'
+    )
+
+    parser.add_argument(
+        '-f', '--metrics-file',
+        default='-',
+        help='File containing metric names to transform to file paths, or ' +
+        '\'-\' to read from STDIN')
+
+    parser.add_argument(
+        '-r', '--reverse',
+        action='store_true',
+        help='Transform from file paths to metric paths'
+    )
+
+    parser.add_argument(
+        '-p', '--prepend',
+        action='store_true',
+        help='Prepend storage dir to file paths')
+
+    parser.add_argument(
+        '-d', '--storage-dir',
+        default=STORAGE_DIR,
+        help='Whisper storage directory to prepend when -p given')
+
+    args = parser.parse_args()
+    metrics = metrics_from_args(args)
+    if args.reverse:
+        func = fs_to_metric
+    else:
+        prepend = args.storage_dir if args.prepend else None
+        func = partial(metric_to_fs, prepend=prepend)
+    for metric in metrics:
+        print func(metric)
+
+
 def whisper_aggregate():
     parser = argparse.ArgumentParser(
         description='Set aggregation for whisper-backed metrics this carbon ' +
@@ -267,29 +306,27 @@ def whisper_aggregate():
 
     parser.add_argument(
         '-d', '--storage-dir',
-        default='/opt/graphite/storage/whisper',
+        default=STORAGE_DIR,
         help='Whisper storage directory')
 
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.INFO)
 
-    if args.metrics_file and args.metrics_file[0] != '-':
-        fi = args.metrics_file
-        metrics = map(lambda s: s.strip(), fileinput.input(fi))
-    else:
-        metrics = map(lambda s: s.strip(), fileinput.input([]))
+    metrics = metrics_from_args(args)
 
     metrics_count = 0
 
     for metric in metrics:
-        name, t = metric.strip().split('|')
+        try:
+            name, t = metric.strip().split('|')
 
-        mode = AGGREGATION[t]
-        if mode is not None:
-            cname = name.replace('.', '/')
-            path = os.path.join(args.storage_dir, cname + '.wsp')
-            metrics_count = metrics_count + setAggregation(path, mode)
+            mode = AGGREGATION[t]
+            if mode is not None:
+                path = metric_to_fs(name, prepend=args.storage_dir)
+                metrics_count = metrics_count + setAggregation(path, mode)
+        except ValueError, exc:
+            logging.warning("Unable to parse '%s' (%s)" % (metric, str(exc)))
 
     logging.info('Successfully set aggregation mode for ' +
                  '%d of %d metrics' % (metrics_count, len(metrics)))

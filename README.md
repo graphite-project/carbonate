@@ -8,6 +8,13 @@ Graphite clusters are pretty cool. Here are some primitive tools to help you man
 
 All of the tools support two common arguments; the path to a config file, and the name of the cluster. Using these tools alongside a config file that describes your graphite clusters you can build up scripts to manage your metrics. Some of the tools could easily be replaced with one-liners in shell, but exist here for convenience and readability. The goal is to provide fast, predictable utilities that can easily be composed into more advanced tooling.
 
+## Install
+[Carbonate is available from Python official third party repository](https://pypi.python.org/pypi/carbonate/0.2.1) (aka PyPi) and as such can be installed via regular Python package managers.
+Note that you might have to install a python package manager (e.g. apt-get install python-setuptools on a ubuntu host)
+
+```
+pip install carbonate
+```
 ## The Config
 
 Carbonate expects a configuration file that defines the clusters in your environment. The default config file is located at `/opt/graphite/conf/carbonate.conf` or can be provided on the command line. The default cluster is named 'main'.
@@ -137,6 +144,32 @@ optional arguments:
                         /opt/graphite/storage/whisper)
   --rsync-options [RSYNC_OPTIONS [RSYNC_OPTIONS ...]]
                         Pass option(s) to rsync (default: -azpS)
+```
+
+### carbon-path
+
+```
+usage: carbon-path [-h] [-c CONFIG_FILE] [-C CLUSTER] [-f METRICS_FILE] [-r]
+                   [-p] [-d STORAGE_DIR]
+
+Transform metric paths to (or from) filesystem paths
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -c CONFIG_FILE, --config-file CONFIG_FILE
+                        Config file to use (default:
+                        /opt/graphite/conf/carbonate.conf)
+  -C CLUSTER, --cluster CLUSTER
+                        Cluster name (default: main)
+  -f METRICS_FILE, --metrics-file METRICS_FILE
+                        File containing metric names to transform to file
+                        paths, or '-' to read from STDIN (default: -)
+  -r, --reverse         Transform from file paths to metric paths (default:
+                        False)
+  -p, --prepend         Prepend storage dir to file paths (default: False)
+  -d STORAGE_DIR, --storage-dir STORAGE_DIR
+                        Whisper storage directory to prepend when -p given
+                        (default: /opt/graphite/storage/whisper)
 ```
 
 ### whisper-aggregate
