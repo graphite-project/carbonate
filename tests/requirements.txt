@@ -5,3 +5,5 @@ nosexcover
 flake8
 mccabe
 tox
+pep8
+pyflakes
