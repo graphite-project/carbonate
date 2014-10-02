@@ -1,12 +1,12 @@
 import sys
 
 # Inject the graphite libs into the system path
-sys.path.insert(0, '/opt/graphite/lib')
+sys.path.insert(0, '/eikon/monitoring/app/graphite/lib')
+from carbon_router import ConsistentHashingRouter
 
 # We're going to use carbon's libs directly to do things
 try:
     from carbon import util
-    from carbon.routers import ConsistentHashingRouter
 except ImportError as e:
     raise SystemExit("No bueno. Can't import carbon! (" + str(e) + ")")
 
