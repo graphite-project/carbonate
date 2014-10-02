@@ -1,8 +1,7 @@
-import pyhash
+import carbonate.fnv1a
 import bisect
 
 class ConsistentHashRing(object):
-  fnv1a_hasher = pyhash.fnv1a_32()
   
   def __init__(self, nodes, replica_count=100):
     self.ring = []
@@ -17,7 +16,7 @@ class ConsistentHashRing(object):
   #   return small_hash
 
   def compute_ring_position(self, key):
-    return self.fnv1a_hasher(key)
+    return carbonate.fnv1a.fnv1a(key)
 
   def add_node(self, node):
     self.nodes.add(node)

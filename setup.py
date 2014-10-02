@@ -1,7 +1,9 @@
 import os
 from carbonate import __version__
-from setuptools import setup, find_packages
+from setuptools import setup, find_packages, Extension
 
+module1 = Extension('carbonate.fnv1a',
+                    sources = ['carbonate/fnv1a.c'])
 
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
@@ -19,8 +21,8 @@ setup(
     packages=find_packages(),
     long_description = read('README.md'),
     install_requires = [
-      "carbon",
-      "whisper",
+        "carbon",
+        "whisper",
     ],
     entry_points = {
         'console_scripts': [
@@ -32,6 +34,5 @@ setup(
             'carbon-path = carbonate.cli:carbon_path',
             'whisper-fill = carbonate.cli:whisper_fill',
             'whisper-aggregate = carbonate.cli:whisper_aggregate'
-            ]
-        }
-    )
+        ]},
+    ext_modules = [module1])
