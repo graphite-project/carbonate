@@ -50,14 +50,14 @@ class ConsistentHashingRouter(DatapointRouter):
     if (server, instance) in self.instance_ports:
       raise Exception("destination instance (%s, %s) already configured" % (server, instance))
     self.instance_ports[(server, instance)] = port
-    self.ring.add_node((server, instance))
+    self.ring.add_node((server, instance, int(port)))
 
   def removeDestination(self, destination):
     (server, port, instance) = destination
     if (server, instance) not in self.instance_ports:
       raise Exception("destination instance (%s, %s) not configured" % (server, instance))
     del self.instance_ports[(server, instance)]
-    self.ring.remove_node((server, instance))
+    self.ring.remove_node((server, instance, int(port)))
 
   def getDestinations(self, metric):
     key = self.getKey(metric)
@@ -65,8 +65,8 @@ class ConsistentHashingRouter(DatapointRouter):
     for count,node in enumerate(self.ring.get_nodes(key)):
       if count == self.replication_factor:
         return
-      (server, instance) = node
-      port = self.instance_ports[ (server, instance) ]
+      (server, instance, port) = node
+      # port = self.instance_ports[ (server, instance) ]
       yield (server, port, instance)
 
   def getKey(self, metric):
