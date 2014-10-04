@@ -172,7 +172,7 @@ def carbon_sync():
 
     config = Config(args.config_file)
 
-    user = config.ssh_user()
+    user = config.ssh_user(args.cluster)
     remote_ip = args.source_node
     remote = "%s@%s:%s/" % (user, remote_ip, args.source_storage_dir)
 
