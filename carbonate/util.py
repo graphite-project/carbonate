@@ -40,5 +40,7 @@ def metric_to_fs(path, prepend=None):
     return filepath
 
 
-def fs_to_metric(path):
-    return path.replace('.wsp', '').replace('/', '.')
+def fs_to_metric(path, prepend=None):
+    if prepend:
+        path = path.replace(prepend, '')
+    return path.replace('.wsp', '').replace('/', '.').strip('.')
