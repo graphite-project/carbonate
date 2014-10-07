@@ -3,17 +3,12 @@ import bisect
 
 class ConsistentHashRing(object):
   
-  def __init__(self, nodes, replica_count=1):
+  def __init__(self, nodes, replica_count=100):
     self.ring = []
     self.nodes = set()
     self.replica_count = replica_count
     for node in nodes:
       self.add_node(node)
-
-  # def compute_ring_position(self, key):
-  #   big_hash = md5( str(key) ).hexdigest()
-  #   small_hash = int(big_hash[:4], 16)
-  #   return small_hash
 
   def compute_ring_position(self, key):
     return carbonate.fnv1a.fnv1a(key)
@@ -23,7 +18,6 @@ class ConsistentHashRing(object):
     (server, _, port) = node
     for i in range(self.replica_count):
       replica_key = "%d-%s:%u" % (i, server, port)
-      print "Using key %s to compute ring position" % (replica_key,)
       position = self.compute_ring_position(replica_key)
       entry = (position, node)
       bisect.insort(self.ring, entry)
