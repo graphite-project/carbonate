@@ -1,6 +1,16 @@
 import os
+import re
 from carbonate import __version__
 from setuptools import setup, find_packages
+from setuptools.command.install_scripts import install_scripts
+
+
+class my_install_scripts(install_scripts):
+  def write_script(self, script_name, contents, mode="t", *ignored):
+    contents = re.sub("import sys",
+                      "import sys\nsys.path.append('/opt/graphite/lib')",
+                      contents)
+    install_scripts.write_script(self, script_name, contents, mode="t", *ignored)
 
 
 def read(fname):
@@ -22,6 +32,7 @@ setup(
       "carbon",
       "whisper",
     ],
+    cmdclass={'install_scripts': my_install_scripts},
     entry_points = {
         'console_scripts': [
             'carbon-lookup = carbonate.cli:carbon_lookup',
