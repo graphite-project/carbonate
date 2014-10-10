@@ -29,18 +29,27 @@ class FilterTest(unittest.TestCase):
                   'metric.105',
                   'metric.107',
                   'metric.108']
+
+        node2 = '2.2.2.2'
+        node2_long = '2.2.2.2:2003:0'
+        output2 = ['metric.100',
+                  'metric.104',
+                  'metric.106',
+                  'metric.109']
+
         f = list(carbonate.sieve.filterMetrics(inputs, node, self.cluster))
         self.assertEqual(f, output)
         f = list(carbonate.sieve.filterMetrics(inputs, node_long, self.cluster))
         self.assertEqual(f, output)
 
-        node = '2.2.2.2'
-        node_long = '2.2.2.2:2003:0'
-        output = ['metric.100',
-                  'metric.104',
-                  'metric.106',
-                  'metric.109']
-        f = list(carbonate.sieve.filterMetrics(inputs, node, self.cluster))
+        f = list(carbonate.sieve.filterMetrics(inputs, node2, self.cluster))
+        self.assertEqual(f, output2)
+        f = list(carbonate.sieve.filterMetrics(inputs, node2_long, self.cluster))
+        self.assertEqual(f, output2)
+
+        f = list(carbonate.sieve.filterMetrics(inputs, node, self.cluster, True))
+        self.assertEqual(f, output2)
+
+        f = list(carbonate.sieve.filterMetrics(inputs, node2, self.cluster, True))
         self.assertEqual(f, output)
-        f = list(carbonate.sieve.filterMetrics(inputs, node_long, self.cluster))
-        self.assertEqual(f, output)
+
