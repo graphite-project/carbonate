@@ -99,7 +99,6 @@ def carbon_sieve():
 
     parser.add_argument(
         '-n', '--node',
-        default="self",
         help='Filter for metrics belonging to this node')
 
     parser.add_argument(
