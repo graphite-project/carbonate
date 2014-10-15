@@ -1,0 +1,10 @@
+#!/bin/sh
+
+set -e
+
+script/cibuild || {
+  echo >&2 "CI Failed. Refusing to release"
+  exit 1
+}
+
+python setup.py sdist upload

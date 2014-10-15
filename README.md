@@ -262,13 +262,4 @@ carbon-list | carbon-sieve -I -n $LOCAL_IP
 
 These tools should be considered beta quality right now. Tests exist for most functionality, but there is still significant work to be done to make them bullet-proof. However, instead of sitting on this code, I'd rather release it and allow others to provide input and help guide the development. So, expect a few bugs and please help me fix them!
 
-## How to contribute:
-
-- Fork the repo
-- Run script/bootstrap to setup your dev environment
-- Create a feature branch
-- Add some tests and code
-- Run script/test to verify things build
-- Send me a PR
-
 The code is available under the MIT license.
