@@ -2,9 +2,19 @@
 
 set -e
 
+git checkout master
+
+git pull --ff
+
+VERSION=$(python -c 'import carbonate ; print carbonate.__version__')
+
 script/cibuild || {
   echo >&2 "CI Failed. Refusing to release"
   exit 1
 }
 
 python setup.py sdist upload
+
+git tag -a "$VERSION" -m"v$VERSION"
+
+git push --tags
