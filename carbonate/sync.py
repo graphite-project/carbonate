@@ -91,8 +91,8 @@ def heal_metric(source, dest):
             logging.warn("Failed to copy %s! %s" % (dest, e))
 
 
-def run_batch(metrics_to_sync, remote, local_storage, rsync_options, dirty):
-    staging_dir = mkdtemp(prefix=remote)
+def run_batch(metrics_to_sync, remote, local_storage, rsync_options, remote_ip, dirty):
+    staging_dir = mkdtemp(prefix=remote_ip)
     sync_file = NamedTemporaryFile(delete=False)
 
     metrics_to_heal = []
