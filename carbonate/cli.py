@@ -166,6 +166,11 @@ def carbon_sync():
         help='Pass option(s) to rsync. Make sure to use ' +
         '"--rsync-options=" if option starts with \'-\'')
 
+    parser.add_argument(
+        '--dirty',
+        action='store_true',
+        help="If set, don't clean temporary rsync directory")
+
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.INFO)
@@ -194,14 +199,14 @@ def carbon_sync():
             print "* Running batch %s-%s" \
                   % (total_metrics-batch_size+1, total_metrics)
             run_batch(metrics_to_sync, remote,
-                      args.storage_dir, args.rsync_options)
+                      args.storage_dir, args.rsync_options, args.dirty)
             metrics_to_sync = []
 
     if len(metrics_to_sync) > 0:
         print "* Running batch %s-%s" \
               % (total_metrics-len(metrics_to_sync)+1, total_metrics)
         run_batch(metrics_to_sync, remote,
-                  args.storage_dir, args.rsync_options)
+                  args.storage_dir, args.rsync_options, args.dirty)
 
     elapsed = (time() - start)
 
