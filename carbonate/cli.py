@@ -199,7 +199,8 @@ def carbon_sync():
             print "* Running batch %s-%s" \
                   % (total_metrics-batch_size+1, total_metrics)
             run_batch(metrics_to_sync, remote,
-                      args.storage_dir, args.rsync_options, remote_ip, args.dirty)
+                      args.storage_dir, args.rsync_options,
+                      remote_ip, args.dirty)
             metrics_to_sync = []
 
     if len(metrics_to_sync) > 0:

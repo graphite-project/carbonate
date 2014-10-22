@@ -91,7 +91,8 @@ def heal_metric(source, dest):
             logging.warn("Failed to copy %s! %s" % (dest, e))
 
 
-def run_batch(metrics_to_sync, remote, local_storage, rsync_options, remote_ip, dirty):
+def run_batch(metrics_to_sync, remote, local_storage, rsync_options,
+              remote_ip, dirty):
     staging_dir = mkdtemp(prefix=remote_ip)
     sync_file = NamedTemporaryFile(delete=False)
 
@@ -124,8 +125,8 @@ def run_batch(metrics_to_sync, remote, local_storage, rsync_options, remote_ip, 
 
     # Cleanup
     if dirty:
-      print "    dirty mode: left temporary directory %s" % staging_dir
+        print "    dirty mode: left temporary directory %s" % staging_dir
     else:
-      rmtree(staging_dir)
+        rmtree(staging_dir)
 
     os.unlink(sync_file.name)
