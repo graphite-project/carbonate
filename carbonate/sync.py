@@ -65,6 +65,33 @@ def sync_batch(metrics_to_heal):
     return batch_elapsed
 
 
+def sync_batch_parallel(metrics_to_heal):
+    "sync a batch of metrics, using gnu parallel to parallelize the merges"
+    batch_start = time()
+
+    print "  - Merging metrics - setup"
+    # setup a gnu parallel input
+    parallel_stdin = []
+    for (staging, local) in metrics_to_heal:
+        if not os.path.exists(local):
+            parallel_stdin.append("cp %s %s" % (staging, local))
+        else:
+            parallel_stdin.append("whisper-fill %s %s" % (staging, local))
+    # invoke gnu parallel with this input
+    print "  - Merging metrics - parallel"
+    p = subprocess.Popen("parallel",
+                         shell=True,
+                         stdout=subprocess.PIPE,
+                         stdin=subprocess.PIPE,
+                         stderr=subprocess.STDOUT)
+    stdout, stderr = p.communicate(input="\n".join(parallel_stdin))
+    print stdout
+    print stderr
+
+    batch_elapsed = time() - batch_start
+    return batch_elapsed
+
+
 def heal_metric(source, dest):
     try:
         with open(dest):
@@ -91,7 +118,7 @@ def heal_metric(source, dest):
             logging.warn("Failed to copy %s! %s" % (dest, e))
 
 
-def run_batch(metrics_to_sync, remote, local_storage, rsync_options):
+def run_batch(metrics_to_sync, remote, local_storage, rsync_options, parallel):
     staging_dir = mkdtemp()
     sync_file = NamedTemporaryFile(delete=False)
 
@@ -113,7 +140,10 @@ def run_batch(metrics_to_sync, remote, local_storage, rsync_options):
 
     rsync_elapsed = (time() - rsync_start)
 
-    merge_elapsed = sync_batch(metrics_to_heal)
+    if parallel:
+        merge_elapsed = sync_batch_parallel(metrics_to_heal)
+    else:
+        merge_elapsed = sync_batch(metrics_to_heal)
 
     total_time = rsync_elapsed + merge_elapsed
 

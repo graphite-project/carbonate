@@ -161,6 +161,12 @@ def carbon_sync():
         help='Source storage dir')
 
     parser.add_argument(
+        '--parallel',
+        default=False,
+        action="store_true",
+        help='use gnu parallel to speed up merging')
+
+    parser.add_argument(
         '--rsync-options',
         default='-azpS',
         help='Pass option(s) to rsync. Make sure to use ' +
@@ -194,7 +200,7 @@ def carbon_sync():
             print "* Running batch %s-%s" \
                   % (total_metrics-batch_size+1, total_metrics)
             run_batch(metrics_to_sync, remote,
-                      args.storage_dir, args.rsync_options)
+                      args.storage_dir, args.rsync_options, args.parallel)
             metrics_to_sync = []
 
     if len(metrics_to_sync) > 0:
