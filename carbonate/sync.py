@@ -74,6 +74,7 @@ def sync_batch_parallel(metrics_to_heal):
     parallel_stdin = []
     for (staging, local) in metrics_to_heal:
         if not os.path.exists(local):
+            parallel_stdin.append("mkdir -p %s" % os.path.dirname(local))
             parallel_stdin.append("cp %s %s" % (staging, local))
         else:
             parallel_stdin.append("whisper-fill %s %s" % (staging, local))
