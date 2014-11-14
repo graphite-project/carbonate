@@ -207,7 +207,7 @@ def carbon_sync():
         print "* Running batch %s-%s" \
               % (total_metrics-len(metrics_to_sync)+1, total_metrics)
         run_batch(metrics_to_sync, remote,
-                  args.storage_dir, args.rsync_options)
+                  args.storage_dir, args.rsync_options, args.parallel)
 
     elapsed = (time() - start)
 
