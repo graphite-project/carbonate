@@ -176,7 +176,7 @@ optional arguments:
 
 ```
 usage: carbon-stale [-h] [-c CONFIG_FILE] [-C CLUSTER] [-f METRICS_FILE] [-r]
-          [-d STORAGE_DIR] [-l HOURS] [-s] [-p]
+                    [-d STORAGE_DIR] [-l HOURS] [-w] [-p]
 
 Transform metric paths to (or from) filesystem paths
 
