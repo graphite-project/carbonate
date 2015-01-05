@@ -176,7 +176,7 @@ optional arguments:
 
 ```
 usage: carbon-stale [-h] [-c CONFIG_FILE] [-C CLUSTER] [-f METRICS_FILE] [-r]
-                    [-d STORAGE_DIR] [-l HOURS] [-w] [-p]
+                    [-d STORAGE_DIR] [-l HOURS] [-o HOURS] [-w] [-p]
 
 Find and list potentially stale metrics.
 
@@ -197,6 +197,9 @@ optional arguments:
                         (default: /opt/graphite/storage/whisper)
   -l HOURS, --limit HOURS
                         Definition of staleness, in hours (default: 24)
+  -o HOURS, --offset HOURS
+                        Use a whisper data window ending HOURS ago (implies
+                        -w) (default: 0)
   -w, --whisper         Use whisper data instead of filesystem stat() call
                         (default: False)
   -p, --paths           Print filesystem paths instead of metric names
