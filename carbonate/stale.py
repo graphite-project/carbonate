@@ -16,7 +16,7 @@ def data(path, hours, offset=0):
     ago, instead of from right now.
     """
     now = time.time()
-    end = now - _to_sec(offset) # Will default to now
+    end = now - _to_sec(offset)  # Will default to now
     start = end - _to_sec(hours)
     _data = whisper.fetch(path, start, end)
     return all(x is None for x in _data[-1])
