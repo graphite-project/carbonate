@@ -39,7 +39,7 @@ class FillTest(unittest.TestCase):
         self._createdb(self.db, schema)
         self._createdb(testdb, schema, emptyData)
 
-        fill_archives(self.db, testdb, startTime)
+        fill_archives(self.db, testdb, startTime, False)
 
         original_data = whisper.fetch(self.db, 0)
         filled_data = whisper.fetch(testdb, 0)
@@ -70,7 +70,7 @@ class FillTest(unittest.TestCase):
         self._createdb(self.db, schema)
         self._createdb(testdb, schema, override_data)
 
-        fill_archives(self.db, testdb, startTime)
+        fill_archives(self.db, testdb, startTime, False)
 
         original_data = whisper.fetch(self.db, 0)
         filled_data = whisper.fetch(testdb, 0)
@@ -102,7 +102,7 @@ class FillTest(unittest.TestCase):
         self._createdb(self.db, schema, complete_data)
         self._createdb(testdb, schema, holes_data)
 
-        fill_archives(self.db, testdb, time.time())
+        fill_archives(self.db, testdb, time.time(), False)
 
         original_data = whisper.fetch(self.db, 0)
         filled_data = whisper.fetch(testdb, 0)

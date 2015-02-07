@@ -14,7 +14,7 @@
 
 # Work performed by author while working at Booking.com.
 
-from whisper import info, fetch, update_many
+import whisper
 
 try:
     from whisper import operator
@@ -45,7 +45,7 @@ def itemgetter(*items):
 def fill(src, dst, tstart, tstop):
     # fetch range start-stop from src, taking values from the highest
     # precision archive, thus optionally requiring multiple fetch + merges
-    srcHeader = info(src)
+    srcHeader = whisper.info(src)
 
     srcArchives = srcHeader['archives']
     srcArchives.sort(key=itemgetter('retention'))
@@ -69,14 +69,14 @@ def fill(src, dst, tstart, tstop):
         untilTime = tstop
         fromTime = rtime if rtime > tstart else tstart
 
-        (timeInfo, values) = fetch(src, fromTime, untilTime)
+        (timeInfo, values) = whisper.fetch(src, fromTime, untilTime)
         (start, end, archive_step) = timeInfo
         pointsToWrite = list(itertools.ifilter(
             lambda points: points[1] is not None,
             itertools.izip(xrange(start, end, archive_step), values)))
         # order points by timestamp, newest first
         pointsToWrite.sort(key=lambda p: p[0], reverse=True)
-        update_many(dst, pointsToWrite)
+        whisper.update_many(dst, pointsToWrite)
 
         tstop = fromTime
 
@@ -85,8 +85,13 @@ def fill(src, dst, tstart, tstop):
             return
 
 
-def fill_archives(src, dst, startFrom):
-    header = info(dst)
+def fill_archives(src, dst, startFrom, lock):
+    if lock is False:
+        whisper.LOCK = False
+    elif whisper.CAN_LOCK and lock is True:
+        whisper.LOCK = True
+
+    header = whisper.info(dst)
     archives = header['archives']
     archives = sorted(archives, key=lambda t: t['retention'])
 
@@ -95,7 +100,7 @@ def fill_archives(src, dst, startFrom):
         if fromTime >= startFrom:
             continue
 
-        (timeInfo, values) = fetch(dst, fromTime, startFrom)
+        (timeInfo, values) = whisper.fetch(dst, fromTime, startFrom)
         (start, end, step) = timeInfo
         gapstart = None
         for v in values:
