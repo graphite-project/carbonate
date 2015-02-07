@@ -14,14 +14,18 @@ def common_parser(description='untitled'):
         description=description,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
 
+    config_file = os.environ.get('CARBONATE_CONFIG',
+                                 '/opt/graphite/conf/carbonate.conf')
+    cluster = os.environ.get('CARBONATE_CLUSTER', 'main')
+
     parser.add_argument(
         '-c', '--config-file',
-        default='/opt/graphite/conf/carbonate.conf',
+        default=config_file,
         help='Config file to use')
 
     parser.add_argument(
         '-C', '--cluster',
-        default='main',
+        default=cluster,
         help='Cluster name')
 
     return parser
