@@ -181,6 +181,8 @@ def carbon_sync():
     remote_ip = args.source_node
     remote = "%s@%s:%s/" % (user, remote_ip, args.source_storage_dir)
 
+    whisper_lock_writes = config.whisper_lock_writes(args.config_file)
+
     metrics_to_sync = []
     metrics = metrics_from_args(args)
 
@@ -200,14 +202,15 @@ def carbon_sync():
                   % (total_metrics-batch_size+1, total_metrics)
             run_batch(metrics_to_sync, remote,
                       args.storage_dir, args.rsync_options,
-                      remote_ip, args.dirty)
+                      remote_ip, args.dirty, whisper_lock_writes)
             metrics_to_sync = []
 
     if len(metrics_to_sync) > 0:
         print "* Running batch %s-%s" \
               % (total_metrics-len(metrics_to_sync)+1, total_metrics)
         run_batch(metrics_to_sync, remote,
-                  args.storage_dir, args.rsync_options, remote_ip, args.dirty)
+                  args.storage_dir, args.rsync_options,
+                  remote_ip, args.dirty, whisper_lock_writes)
 
     elapsed = (time() - start)
 

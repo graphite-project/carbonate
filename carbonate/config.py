@@ -42,3 +42,13 @@ class Config():
             return self.config.get(cluster, 'ssh_user')
         except NoOptionError:
             return pwd.getpwuid(os.getuid()).pw_name
+
+    def whisper_lock_writes(self, cluster='main'):
+        """Lock whisper files during carbon-sync."""
+        if not self.config.has_section(cluster):
+            raise SystemExit("Cluster '%s' not defined in %s"
+                             % (cluster, self.config_file))
+        try:
+            return bool(self.config.get(cluster, 'whisper_lock_writes'))
+        except NoOptionError:
+            return False
