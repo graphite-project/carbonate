@@ -26,6 +26,13 @@ class Config():
         destinations = self.config.get(cluster, 'destinations')
         return destinations.replace(' ', '').split(',')
 
+    def relay_method(self, cluster='main'):
+        """Return the carbon relay method for a cluster."""
+        if not self.config.has_section(cluster):
+            raise SystemExit("Cluster '%s' not defined in %s"
+                             % (cluster, self.config_file))
+        return self.config.get(cluster, 'relay_method')
+
     def replication_factor(self, cluster='main'):
         """Return the replication factor for a cluster as an integer."""
         if not self.config.has_section(cluster):

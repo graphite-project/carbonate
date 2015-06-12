@@ -22,11 +22,14 @@ Carbonate expects a configuration file that defines the clusters in your environ
 ```
 [main]
 DESTINATIONS = 192.168.9.13:2004:carbon01, 192.168.9.15:2004:carbon02, 192.168.6.20:2004:carbon03
+RELAY_METHOD = aggregated-consistent-hashing
 REPLICATION_FACTOR = 2
 SSH_USER = carbon
 ```
 
 You should take care to match the list of destination IPs or hostnames to the nodes in your cluster. Though its worth noting that the ports and labels are currently not used by carbonate. Order is important because of how the consistent hash ring is created.
+
+You can configure the relay method to be one of "consistent-hashing" or "aggregated-consistent-hashing". If omitted, "consistent-hashing" is used by default. Use of "aggregated-consistent-hashing" usually requires a rules file to be provided to relevant commands.
 
 The replication factor should match the replication factor for the cluster.
 
@@ -67,6 +70,10 @@ optional arguments:
                         /opt/graphite/conf/carbonate.conf)
   -C CLUSTER, --cluster CLUSTER
                         Cluster name (default: main)
+  -a AGGREGATION_RULES, --aggregation-rules AGGREGATION_RULES
+                        File containing rules used in conjunction with the
+                        "aggregated-consistent-hashing" relay method (default:
+                        /opt/graphite/conf/aggregation-rules.conf)
   -s, --short           Only display the address, without port and cluster
                         name (default: False)
 ```
@@ -107,6 +114,10 @@ optional arguments:
   -f METRICS_FILE, --metrics-file METRICS_FILE
                         File containing metric names to filter, or '-' to read
                         from STDIN (default: -)
+  -a AGGREGATION_RULES, --aggregation-rules AGGREGATION_RULES
+                        File containing rules used in conjunction with the
+                        "aggregated-consistent-hashing" relay method (default:
+                        /opt/graphite/conf/aggregation-rules.conf)
   -n NODE, --node NODE  Filter for metrics belonging to this node (default:
                         self)
   -I, --invert          Invert the sieve, match metrics that do NOT belong to
