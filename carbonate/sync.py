@@ -1,7 +1,6 @@
 import os
 import sys
 import logging
-import shutil
 import subprocess
 from time import time
 from datetime import timedelta
@@ -77,8 +76,8 @@ def heal_metric(source, dest):
                 except os.error:
                     pass
                 try:
-                    shutil.copyfile(source, dest)
-                except IOError as e:
+                    subprocess.check_call(['cp', source, dest])
+                except subprocess.CalledProcessError as e:
                     logging.warn("Failed to copy %s! %s" % (dest, e))
     except IOError:
         try:
@@ -86,8 +85,8 @@ def heal_metric(source, dest):
         except os.error:
             pass
         try:
-            shutil.copyfile(source, dest)
-        except IOError as e:
+            subprocess.check_call(['cp', source, dest])
+        except subprocess.CalledProcessError as e:
             logging.warn("Failed to copy %s! %s" % (dest, e))
 
 
