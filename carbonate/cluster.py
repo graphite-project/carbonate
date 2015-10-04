@@ -13,7 +13,11 @@ except ImportError as e:
 
 class Cluster():
     def __init__(self, config, cluster='main'):
-        self.ring = ConsistentHashingRouter(config.replication_factor(cluster))
+        try:
+            self.ring = ConsistentHashingRouter(config.replication_factor(cluster),
+                                                diverse_replicas=config.diverse_replicas(cluster))
+        except TypeError:
+            self.ring = ConsistentHashingRouter(config.replication_factor(cluster))
 
         try:
             dest_list = config.destinations(cluster)

@@ -33,6 +33,13 @@ class Config():
                              % (cluster, self.config_file))
         return int(self.config.get(cluster, 'replication_factor'))
 
+    def diverse_replicas(self, cluster='main'):
+        """Return the diverse replicas value for a cluster as an boolean."""
+        if not self.config.has_section(cluster):
+            raise SystemExit("Cluster '%s' not defined in %s"
+                             % (cluster, self.config_file))
+        return bool(self.config.get(cluster, 'diverse_replicas'))
+
     def ssh_user(self, cluster='main'):
         """Return the ssh user for a cluster or current user if undefined."""
         if not self.config.has_section(cluster):
