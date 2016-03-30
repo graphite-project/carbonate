@@ -42,6 +42,7 @@ def sync_batch(metrics_to_heal):
     sync_count = 0
     sync_total = len(metrics_to_heal)
     sync_avg = 0.1
+    sync_elapsed = 0
     sync_remain = 'n/a'
 
     for (staging, local) in metrics_to_heal:
@@ -56,7 +57,7 @@ def sync_batch(metrics_to_heal):
 
         heal_metric(staging, local)
 
-        sync_elapsed = time() - sync_start
+        sync_elapsed += time() - sync_start
         sync_avg = sync_elapsed / sync_count
         sync_remain_s = sync_avg * (sync_total - sync_count)
         sync_remain = str(timedelta(seconds=sync_remain_s))
