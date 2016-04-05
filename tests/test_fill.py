@@ -4,7 +4,18 @@ import whisper
 import time
 import random
 
+import mock
+
 from carbonate.fill import fill_archives
+
+def _average(ints_or_nones):
+    total = 0
+    count = 0
+    for i in ints_or_nones:
+        if i is not None:
+            total += i
+            count += 1
+    return total // count
 
 
 class FillTest(unittest.TestCase):
@@ -107,6 +118,60 @@ class FillTest(unittest.TestCase):
         original_data = whisper.fetch(self.db, 0)
         filled_data = whisper.fetch(testdb, 0)
         self.assertEqual(original_data, filled_data)
+
+    @mock.patch('time.time', return_value=123456)
+    def test_fill_endat(self, unused_mock_time):
+        dst_db = "dst-%s" % self.db
+        self._removedb()
+        try:
+            os.unlink(dst_db)
+        except (IOError, OSError):
+            pass
+
+        complete = range(1, 21)
+        seconds_per_point = 1
+        seconds_per_point_l2 = seconds_per_point * 4
+        points_number = len(complete)
+        schema = [(seconds_per_point, points_number),
+                  (seconds_per_point_l2, points_number),
+        ]
+        empty_data = []
+
+        end = int(time.time()) + seconds_per_point
+        start = end - (points_number * seconds_per_point)
+        times = range(start, end, seconds_per_point)
+
+        complete_data = zip(times, complete)
+        self._createdb(self.db, schema, complete_data)
+        self._createdb(dst_db, schema, empty_data)
+
+        quarter = points_number // 4
+        half = points_number // 2
+        three_quarter =  points_number * 3 // 4
+
+        # fills a fourth of data, from 2/4th to 3/4th
+        fill_archives(self.db, dst_db, time.time()-quarter, time.time()-half)
+        quarter_filled_data = whisper.fetch(dst_db, start-seconds_per_point)[1]
+        expected = [None]*half + complete[half:three_quarter] + [None]*quarter
+        self.assertEqual(expected, quarter_filled_data)
+        # Fetching data older than start forces the use of the second level of aggregation
+        # We get a first empty cell and then
+        quarter_filled_data_l2 = whisper.fetch(dst_db, 0)[1]
+        average_l1 = _average(quarter_filled_data)
+        average_l2 = _average(quarter_filled_data_l2)
+        self.assertEqual(average_l1, average_l2)
+
+        # fills a half of data, from 2/4th to 4/4th
+        fill_archives(self.db, dst_db, time.time(), time.time()-half)
+        half_filled_data = whisper.fetch(dst_db, start-seconds_per_point)[1]
+        expected = [None]*half + complete[half:]
+        self.assertEqual(expected, half_filled_data)
+
+        # Explicitly passes the default value of endAt=now (excluded)
+        fill_archives(self.db, dst_db, time.time(), endAt=0)
+        filled_data = whisper.fetch(dst_db, start-seconds_per_point)[1]
+        self.assertEqual(complete[:-1], filled_data[:-1])
+        self.assertEqual(filled_data[-1], None)
 
 
     def _createdb(self, wsp, schema=[(1, 20)], data=None):
