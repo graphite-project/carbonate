@@ -79,7 +79,7 @@ def heal_metric(source, dest, start_time=0, end_time=None):
                 fill_archives(
                     source, dest, startFrom=end_time, endAt=start_time)
             except CorruptWhisperFile as e:
-                logging.warn("Overwriting corrupt file %s!" % dest)
+                logging.warn("Overwriting corrupt file %s: %s" % (dest, e))
                 try:
                     os.makedirs(os.path.dirname(dest))
                 except os.error:
@@ -87,7 +87,7 @@ def heal_metric(source, dest, start_time=0, end_time=None):
                 try:
                     shutil.copyfile(source, dest)
                 except IOError as e:
-                    logging.warn("Failed to copy %s! %s" % (dest, e))
+                    logging.warn("Failed to copy %s: %s" % (dest, e))
     except IOError:
         try:
             os.makedirs(os.path.dirname(dest))
