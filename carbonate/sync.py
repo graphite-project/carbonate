@@ -68,7 +68,7 @@ def sync_batch(metrics_to_heal):
     return batch_elapsed
 
 
-def heal_metric(source, dest, start_time=0, end_time=None):
+def heal_metric(source, dest, start_time=0, end_time=None, overwrite=False):
     if end_time is None:
         end_time = time()
     try:
@@ -77,7 +77,8 @@ def heal_metric(source, dest, start_time=0, end_time=None):
                 # fill_archives' start and end are the opposite
                 # of what you'd expect
                 fill_archives(
-                    source, dest, startFrom=end_time, endAt=start_time)
+                    source, dest, startFrom=end_time, endAt=start_time,
+                    overwrite=overwrite)
             except CorruptWhisperFile as e:
                 logging.warn("Overwriting corrupt file %s: %s" % (dest, e))
                 try:
