@@ -46,10 +46,15 @@ def carbon_list():
         default=STORAGE_DIR,
         help='Storage dir')
 
+    parser.add_argument(
+        '-s', '--follow-sym-links',
+        action='store_true',
+        help='Follow sym links')
+
     args = parser.parse_args()
 
     try:
-        for m in listMetrics(args.storage_dir):
+        for m in listMetrics(args.storage_dir,args.follow_sym_links):
             print m
     except IOError as e:
         if e.errno == errno.EPIPE:
