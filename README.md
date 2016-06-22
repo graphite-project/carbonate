@@ -2,7 +2,7 @@
 
 > "Pop bottles." *-- Birdman*
 
-[![Build Status](https://travis-ci.org/jssjr/carbonate.png)](https://travis-ci.org/jssjr/carbonate)
+[![Build Status](https://travis-ci.org/graphite-project/carbonate.svg?branch=master)](https://travis-ci.org/graphite-project/carbonate)
 
 Graphite clusters are pretty cool. Here are some primitive tools to help you manage your graphite clusters.
 
