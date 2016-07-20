@@ -1,8 +1,8 @@
 import sys
 
 # Inject the graphite libs into the system path
-sys.path.insert(0, '/eikon/monitoring/app/graphite/lib')
-sys.path.insert(1, '/eikon/monitoring/app/pypi/lib')
+sys.path.insert(0, '/compass/monitor/app/graphite/lib')
+sys.path.insert(1, '/compass/monitor/app/pypi/lib')
 from carbon_router import ConsistentHashingRouter
 
 # We're going to use carbon's libs directly to do things
