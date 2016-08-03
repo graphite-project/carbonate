@@ -17,7 +17,7 @@ pip install carbonate
 ```
 ## The Config
 
-Carbonate expects a configuration file that defines the clusters in your environment. The default config file is located at `/opt/graphite/conf/carbonate.conf` or can be provided on the command line. The default cluster is named 'main'.
+Carbonate expects a configuration file that defines the clusters in your environment. The default config file is located at `/opt/graphite/conf/carbonate.conf` or can be provided on the command line. The default cluster is named 'main'. Both defaults can be overridden by setting in the environment `CARBONATE_CONFIG` and `CARBONATE_CLUSTER` respectively.
 
 ```
 [main]

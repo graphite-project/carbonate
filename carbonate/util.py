@@ -21,12 +21,12 @@ def common_parser(description='untitled'):
     parser.add_argument(
         '-c', '--config-file',
         default=config_file,
-        help='Config file to use')
+        help='Config file to use (env: CARBONATE_CONFIG)')
 
     parser.add_argument(
         '-C', '--cluster',
         default=cluster,
-        help='Cluster name')
+        help='Cluster name (env: CARBONATE_CLUSTER)')
 
     return parser
 
