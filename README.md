@@ -23,12 +23,15 @@ Carbonate expects a configuration file that defines the clusters in your environ
 [main]
 DESTINATIONS = 192.168.9.13:2004:carbon01, 192.168.9.15:2004:carbon02, 192.168.6.20:2004:carbon03
 REPLICATION_FACTOR = 2
+DIVERSE_REPLICAS = False
 SSH_USER = carbon
 ```
 
 You should take care to match the list of destination IPs or hostnames to the nodes in your cluster. Though its worth noting that the ports and labels are currently not used by carbonate. Order is important because of how the consistent hash ring is created.
 
 The replication factor should match the replication factor for the cluster.
+
+DIVERSE_REPLICAS parameter was introduced after optional change of consistent-hash routing in carbon 0.9.14 (please see https://github.com/graphite-project/carbon/pull/452) and master (https://github.com/graphite-project/carbon/pull/453).
 
 Finally, you can choose to provide a SSH user that will be used when carbonate requires connecting to another node in the cluster to perform an operation. If this is not provided, then the current user executing the command will be chosen.
 
