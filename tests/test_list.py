@@ -39,7 +39,7 @@ class ListTest(unittest.TestCase):
             else:
                 os.mkdir(os.path.join(cls.rootdir, f))
         for s in cls.symlinks:
-            os.symlink(os.path.join(cls.rootdir, s[0]), os.path.join(cls.rootdir, s[1]))
+            os.symlink( s[0], os.path.join(cls.rootdir, s[1]))
 
     def test_list_withsym(self):
         res = sorted(list(listMetrics(self.rootdir, True)))
