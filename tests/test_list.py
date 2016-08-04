@@ -42,7 +42,7 @@ class ListTest(unittest.TestCase):
             os.symlink(os.path.join(cls.rootdir, s[0]), os.path.join(cls.rootdir, s[1]))
 
     def test_list_withsym(self):
-        res = sorted(list(listMetrics(self.rootdir), True))
+        res = sorted(list(listMetrics(self.rootdir, True)))
         self.assertEqual(res, self.expected_metrics_withsym)
 
     def test_list_with_trailing_slash_withsym(self):
