@@ -18,12 +18,14 @@ class ListTest(unittest.TestCase):
                         "ham.bones",
                         "ham.hocks"]
 
-    expected_metrics_withsym = ["foo.sprockets",
+    expected_metrics_withsym = ["bar.sprockets",
+                                "bar.widgets",
+                                "foo.sprockets",
                                 "foo.widgets",
                                 "ham.bones",
-                                "ham.hocks",
-                                "bar.sprockets",
-                                "bar.widgets"]
+                                "ham.hocks"]
+                                
+                               
 
     symlinks = [("foo", "bar"),]
 
