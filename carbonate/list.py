@@ -7,7 +7,7 @@ def listMetrics(storage_dir, follow_sym_links=False, metric_suffix='wsp'):
 
     storage_dir = storage_dir.rstrip(os.sep)
 
-    for root, dirnames, filenames in os.walk(storage_dir,\
+    for root, dirnames, filenames in os.walk(storage_dir,
                                              followlinks=follow_sym_links):
         for filename in filenames:
             if metric_regex.match(filename):
