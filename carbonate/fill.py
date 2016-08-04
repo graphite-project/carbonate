@@ -85,23 +85,34 @@ def fill(src, dst, tstart, tstop):
             return
 
 
-def fill_archives(src, dst, startFrom):
+def fill_archives(src, dst, startFrom, endAt=0, overwrite=False):
+    """
+    Fills gaps in dst using data from src.
+
+    src is the path as a string
+    dst is the path as a string
+    startFrom is the latest timestamp (archives are read backward)
+    endAt is the earliest timestamp (archives are read backward).
+          if absent, we take the earliest timestamp in the archive
+    overwrite will write all non nullpoints from src dst.
+    """
     header = info(dst)
     archives = header['archives']
     archives = sorted(archives, key=lambda t: t['retention'])
 
     for archive in archives:
-        fromTime = time.time() - archive['retention']
+        fromTime = max(endAt, time.time() - archive['retention'])
         if fromTime >= startFrom:
             continue
 
-        (timeInfo, values) = fetch(dst, fromTime, startFrom)
+        (timeInfo, values) = fetch(dst, fromTime, untilTime=startFrom)
         (start, end, step) = timeInfo
         gapstart = None
-        for v in values:
-            if not v and not gapstart:
+        for value in values:
+            has_value = bool(value and not overwrite)
+            if not has_value and not gapstart:
                 gapstart = start
-            elif v and gapstart:
+            elif has_value and gapstart:
                 # ignore single units lost
                 if (start - gapstart) > archive['secondsPerPoint']:
                     fill(src, dst, gapstart - step, start)
@@ -111,4 +122,6 @@ def fill_archives(src, dst, startFrom):
 
             start += step
 
+        # The next archive only needs to be filled up to the latest point
+        # in time we updated.
         startFrom = fromTime
