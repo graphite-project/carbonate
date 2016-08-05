@@ -41,6 +41,7 @@ setup(
             'carbon-list = carbonate.cli:carbon_list',
             'carbon-hosts = carbonate.cli:carbon_hosts',
             'carbon-path = carbonate.cli:carbon_path',
+            'carbon-stale = carbonate.cli:carbon_stale',
             'whisper-fill = carbonate.cli:whisper_fill',
             'whisper-aggregate = carbonate.cli:whisper_aggregate'
             ]

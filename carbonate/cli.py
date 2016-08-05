@@ -12,6 +12,7 @@ from .fill import fill_archives
 from .list import listMetrics
 from .lookup import lookup
 from .sieve import filterMetrics
+from .stale import data, stat
 from .sync import run_batch
 from .util import (
     local_addresses, common_parser, metric_to_fs, fs_to_metric,
@@ -260,6 +261,60 @@ def carbon_path():
 
     for metric in metrics:
         print func(metric)
+
+
+def carbon_stale():
+    # Use common_parser for consistency, even though we do not use any config
+    # file options at present.
+    parser = common_parser(
+        'Find and list potentially stale metrics.'
+    )
+
+    parser.add_argument(
+        '-f', '--metrics-file',
+        default='-',
+        help='File containing metric names to scan for staleness, or ' +
+        '\'-\' to read from STDIN')
+
+    parser.add_argument(
+        '-r', '--reverse',
+        action='store_true',
+        help='Output metrics which are not stale instead')
+
+    parser.add_argument(
+        '-d', '--storage-dir',
+        default=STORAGE_DIR,
+        help='Whisper storage directory to prepend when -p given')
+
+    parser.add_argument(
+        '-l', '--limit', metavar='HOURS',
+        type=int, default=24,
+        help='Definition of staleness, in hours')
+
+    parser.add_argument(
+        '-o', '--offset', metavar='HOURS',
+        type=int, default=0,
+        help='Use a whisper data window ending HOURS ago (implies -w)')
+
+    parser.add_argument(
+        '-w', '--whisper',
+        action='store_true',
+        help='Use whisper data instead of filesystem stat() call')
+
+    parser.add_argument(
+        '-p', '--paths',
+        action='store_true',
+        help='Print filesystem paths instead of metric names')
+
+    args = parser.parse_args()
+    metrics = metrics_from_args(args)
+    prefix = args.storage_dir
+    use_whisper = args.whisper or args.offset
+    for path in map(partial(metric_to_fs, prepend=prefix), metrics):
+        passed = (data if use_whisper else stat)(path, args.limit, args.offset)
+        value = path if args.paths else fs_to_metric(path, prepend=prefix)
+        if (not passed) if args.reverse else passed:
+            print value
 
 
 def whisper_aggregate():

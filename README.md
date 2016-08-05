@@ -172,6 +172,40 @@ optional arguments:
                         (default: /opt/graphite/storage/whisper)
 ```
 
+### carbon-stale
+
+```
+usage: carbon-stale [-h] [-c CONFIG_FILE] [-C CLUSTER] [-f METRICS_FILE] [-r]
+                    [-d STORAGE_DIR] [-l HOURS] [-o HOURS] [-w] [-p]
+
+Find and list potentially stale metrics.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -c CONFIG_FILE, --config-file CONFIG_FILE
+                        Config file to use (default:
+                        /opt/graphite/conf/carbonate.conf)
+  -C CLUSTER, --cluster CLUSTER
+                        Cluster name (default: main)
+  -f METRICS_FILE, --metrics-file METRICS_FILE
+                        File containing metric names to transform to file
+                        paths, or '-' to read from STDIN (default: -)
+  -r, --reverse         Output metrics which are not stale instead (default:
+                        False)
+  -d STORAGE_DIR, --storage-dir STORAGE_DIR
+                        Whisper storage directory to prepend when -p given
+                        (default: /opt/graphite/storage/whisper)
+  -l HOURS, --limit HOURS
+                        Definition of staleness, in hours (default: 24)
+  -o HOURS, --offset HOURS
+                        Use a whisper data window ending HOURS ago (implies
+                        -w) (default: 0)
+  -w, --whisper         Use whisper data instead of filesystem stat() call
+                        (default: False)
+  -p, --paths           Print filesystem paths instead of metric names
+                        (default: False)
+```
+
 ### whisper-aggregate
 
 ```
@@ -257,6 +291,39 @@ LOCAL_IP="$1"
 
 carbon-list | carbon-sieve -I -n $LOCAL_IP
 ```
+
+### Listing metrics that have stopped updating
+
+Metrics with whisper data that is entirely blank for the last 2 hours (perhaps
+useful if you suspect issues with fs timestamps or carbon clients writing in 'the
+future'):
+
+```
+carbon-list | carbon-stale --whisper --limit=2
+```
+
+Metrics whose metrics files appear untouched for 48 hours or more (functionally
+identical to `find /your/data/dir -type f -mtime +2`):
+
+```
+carbon-list | carbon-stale --limit=48
+```
+
+More interesting is if you use ``carbon-stale``, then sieve to identify stale
+metrics that don't belong here (vs un-stale metrics that *do* belong here but
+are misreported in carbon-sieve due to things like doubled-up periods in metric
+paths due to broken collectors. It's a thing.)
+
+```
+carbon-list | carbon-stale --limit=48 | carbon-sieve -I -n $LOCAL_IP
+```
+
+To print file paths for use with e.g. `xargs rm` or whatnot, use `-p`:
+
+```
+carbon-list | carbon-stale -p | xargs -n 100 rm
+```
+
 
 # License and warnings
 
