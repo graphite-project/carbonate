@@ -71,15 +71,14 @@ def heal_metric(source, dest):
             try:
                 fill_archives(source, dest, time())
             except CorruptWhisperFile as e:
-                logging.warn("Overwriting corrupt file %s!" % dest)
-                try:
-                    os.makedirs(os.path.dirname(dest))
-                except os.error:
-                    pass
-                try:
-                    shutil.copyfile(source, dest)
-                except IOError as e:
-                    logging.warn("Failed to copy %s! %s" % (dest, e))
+                if e.path == source:
+                    # The source file is corrupt, we bail
+                    logging.warn("Source file corrupt, skipping: %s"
+                                 % source)
+                else:
+                    logging.warn("Overwriting corrupt file %s!" % dest)
+                    # Use our error handling below
+                    raise IOError("corrupt WSP file: %s" % e.path)
     except IOError:
         try:
             os.makedirs(os.path.dirname(dest))
