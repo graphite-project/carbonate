@@ -399,4 +399,4 @@ def whisper_fill():
 
     startFrom = time()
 
-    fill_archives(src, dst, startFrom, args.lock)
+    fill_archives(src, dst, startFrom, lock_writes=args.lock)

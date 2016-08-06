@@ -85,7 +85,7 @@ def fill(src, dst, tstart, tstop):
             return
 
 
-def fill_archives(src, dst, startFrom, endAt=0, overwrite=False, lock=False):
+def fill_archives(src, dst, startFrom, endAt=0, overwrite=False, lock_writes=False):
     """
     Fills gaps in dst using data from src.
 
@@ -97,9 +97,9 @@ def fill_archives(src, dst, startFrom, endAt=0, overwrite=False, lock=False):
     overwrite will write all non nullpoints from src dst.
     lock using whisper lock if true
     """
-    if lock is False:
+    if lock_writes is False:
         whisper.LOCK = False
-    elif whisper.CAN_LOCK and lock is True:
+    elif whisper.CAN_LOCK and lock_writes is True:
         whisper.LOCK = True
 
     header = whisper.info(dst)

@@ -78,7 +78,7 @@ def heal_metric(source, dest, start_time=0, end_time=None, overwrite=False, lock
                 # of what you'd expect
                 fill_archives(
                     source, dest, startFrom=end_time, endAt=start_time,
-                    overwrite=overwrite)
+                    overwrite=overwrite, lock_writes=lock_writes)
             except CorruptWhisperFile as e:
                 if e.path == source:
                     # The source file is corrupt, we bail
