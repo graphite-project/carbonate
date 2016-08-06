@@ -73,8 +73,7 @@ def heal_metric(source, dest):
             except CorruptWhisperFile as e:
                 if e.path == source:
                     # The source file is corrupt, we bail
-                    logging.warn("Source file corrupt, skipping: %s" \
-                                 % source)
+                    logging.warn("Source file corrupt, skipping: %s" % source)
                 else:
                     # Do it the old fashioned way...possible data loss
                     logging.warn("Overwriting corrupt file: %s" % dest)
