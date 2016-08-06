@@ -1,7 +1,12 @@
+import os
 import sys
 
 # Inject the graphite libs into the system path
-sys.path.insert(0, '/opt/graphite/lib')
+venv_root = ""
+if os.environ.get("VIRTUAL_ENV"):
+    # Running in a virtual environment
+    venv_root = [p for p in sys.path if p.endswith("site-packages")][-1]
+sys.path.insert(0, venv_root + "/opt/graphite/lib")
 
 # We're going to use carbon's libs directly to do things
 try:
