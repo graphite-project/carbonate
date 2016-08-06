@@ -194,7 +194,7 @@ def carbon_sync():
     remote = "%s@%s:%s/" % (user, remote_ip, args.source_storage_dir)
 
     whisper_lock_writes = config.whisper_lock_writes(args.config_file) or \
-                          args.lock
+        args.lock
 
     metrics_to_sync = []
     metrics = metrics_from_args(args)
