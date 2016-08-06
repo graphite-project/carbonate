@@ -37,7 +37,7 @@ def sync_from_remote(sync_file, remote, staging, rsync_options):
         logging.warn("Failed to sync from %s! %s" % (remote, e))
 
 
-def sync_batch(metrics_to_heal):
+def sync_batch(metrics_to_heal, lock_writes):
     batch_start = time()
     sync_count = 0
     sync_total = len(metrics_to_heal)
@@ -54,7 +54,7 @@ def sync_batch(metrics_to_heal):
                          sync_remain, sync_percent)
         print status_line
 
-        heal_metric(staging, local)
+        heal_metric(staging, local, lock_writes)
 
         sync_elapsed = time() - sync_start
         sync_avg = sync_elapsed / sync_count
@@ -65,11 +65,11 @@ def sync_batch(metrics_to_heal):
     return batch_elapsed
 
 
-def heal_metric(source, dest):
+def heal_metric(source, dest, lock_writes):
     try:
         with open(dest):
             try:
-                fill_archives(source, dest, time())
+                fill_archives(source, dest, time(), lock_writes)
             except CorruptWhisperFile as e:
                 if e.path == source:
                     # The source file is corrupt, we bail
@@ -104,7 +104,7 @@ def heal_metric(source, dest):
 
 
 def run_batch(metrics_to_sync, remote, local_storage, rsync_options,
-              remote_ip, dirty):
+              remote_ip, dirty, lock_writes):
     staging_dir = mkdtemp(prefix=remote_ip)
     sync_file = NamedTemporaryFile(delete=False)
 
@@ -126,7 +126,7 @@ def run_batch(metrics_to_sync, remote, local_storage, rsync_options,
 
     rsync_elapsed = (time() - rsync_start)
 
-    merge_elapsed = sync_batch(metrics_to_heal)
+    merge_elapsed = sync_batch(metrics_to_heal, lock_writes)
 
     total_time = rsync_elapsed + merge_elapsed
 
