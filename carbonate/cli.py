@@ -177,6 +177,12 @@ def carbon_sync():
         action='store_true',
         help="If set, don't clean temporary rsync directory")
 
+    parser.add_argument(
+        '-l', '--lock',
+        default=False,
+        action='store_true',
+        help='Lock whisper files during filling')
+
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.INFO)
@@ -187,7 +193,8 @@ def carbon_sync():
     remote_ip = args.source_node
     remote = "%s@%s:%s/" % (user, remote_ip, args.source_storage_dir)
 
-    whisper_lock_writes = config.whisper_lock_writes(args.config_file)
+    whisper_lock_writes = config.whisper_lock_writes(args.config_file) or \
+                          args.lock
 
     metrics_to_sync = []
     metrics = metrics_from_args(args)
@@ -208,7 +215,7 @@ def carbon_sync():
                   % (total_metrics-batch_size+1, total_metrics)
             run_batch(metrics_to_sync, remote,
                       args.storage_dir, args.rsync_options,
-                      remote_ip, args.dirty, whisper_lock_writes)
+                      remote_ip, args.dirty, lock_writes=whisper_lock_writes)
             metrics_to_sync = []
 
     if len(metrics_to_sync) > 0:
@@ -216,7 +223,7 @@ def carbon_sync():
               % (total_metrics-len(metrics_to_sync)+1, total_metrics)
         run_batch(metrics_to_sync, remote,
                   args.storage_dir, args.rsync_options,
-                  remote_ip, args.dirty, whisper_lock_writes)
+                  remote_ip, args.dirty, lock_writes=whisper_lock_writes)
 
     elapsed = (time() - start)
 
