@@ -85,7 +85,8 @@ def fill(src, dst, tstart, tstop):
             return
 
 
-def fill_archives(src, dst, startFrom, endAt=0, overwrite=False, lock_writes=False):
+def fill_archives(src, dst, startFrom, endAt=0, overwrite=False,
+                  lock_writes=False):
     """
     Fills gaps in dst using data from src.
 

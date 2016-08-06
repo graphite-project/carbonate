@@ -57,7 +57,8 @@ def sync_batch(metrics_to_heal, lock_writes=False):
 
         # Do not try healing data past the point they were rsync'd
         # as we would not have new points in staging anyway.
-        heal_metric(staging, local, end_time=batch_start, lock_writes=lock_writes)
+        heal_metric(staging, local, end_time=batch_start,
+                    lock_writes=lock_writes)
 
         sync_elapsed += time() - sync_start
         sync_avg = sync_elapsed / sync_count
@@ -68,7 +69,8 @@ def sync_batch(metrics_to_heal, lock_writes=False):
     return batch_elapsed
 
 
-def heal_metric(source, dest, start_time=0, end_time=None, overwrite=False, lock_writes=False):
+def heal_metric(source, dest, start_time=0, end_time=None, overwrite=False,
+                lock_writes=False):
     if end_time is None:
         end_time = time()
     try:
