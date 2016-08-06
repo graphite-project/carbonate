@@ -83,8 +83,9 @@ def heal_metric(source, dest):
                         pass
                     try:
                         # Make a backup of corrupt file
-                        shutil.copyfile(dest, dest+".corrupt")
-                        logging.warn("Corrupt file saved as %s" % dest+".corrupt")
+                        corrupt = dest + ".corrupt"
+                        shutil.copyfile(dest, corrupt)
+                        logging.warn("Corrupt file saved as %s" % corrupt)
                         shutil.copyfile(source, dest)
                     except IOError as e:
                         logging.warn("Failed to copy %s! %s" % (dest, e))
