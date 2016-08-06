@@ -42,6 +42,7 @@ def sync_batch(metrics_to_heal):
     sync_count = 0
     sync_total = len(metrics_to_heal)
     sync_avg = 0.1
+    sync_elapsed = 0
     sync_remain = 'n/a'
 
     for (staging, local) in metrics_to_heal:
@@ -54,9 +55,11 @@ def sync_batch(metrics_to_heal):
                          sync_remain, sync_percent)
         print status_line
 
-        heal_metric(staging, local)
+        # Do not try healing data past the point they were rsync'd
+        # as we would not have new points in staging anyway.
+        heal_metric(staging, local, end_time=batch_start)
 
-        sync_elapsed = time() - sync_start
+        sync_elapsed += time() - sync_start
         sync_avg = sync_elapsed / sync_count
         sync_remain_s = sync_avg * (sync_total - sync_count)
         sync_remain = str(timedelta(seconds=sync_remain_s))
@@ -65,11 +68,17 @@ def sync_batch(metrics_to_heal):
     return batch_elapsed
 
 
-def heal_metric(source, dest):
+def heal_metric(source, dest, start_time=0, end_time=None, overwrite=False):
+    if end_time is None:
+        end_time = time()
     try:
         with open(dest):
             try:
-                fill_archives(source, dest, time())
+                # fill_archives' start and end are the opposite
+                # of what you'd expect
+                fill_archives(
+                    source, dest, startFrom=end_time, endAt=start_time,
+                    overwrite=overwrite)
             except CorruptWhisperFile as e:
                 if e.path == source:
                     # The source file is corrupt, we bail
