@@ -1,7 +1,6 @@
 import os
 import sys
 import logging
-import shutil
 import subprocess
 from time import time
 from datetime import timedelta
@@ -95,10 +94,10 @@ def heal_metric(source, dest, start_time=0, end_time=None, overwrite=False,
                     try:
                         # Make a backup of corrupt file
                         corrupt = dest + ".corrupt"
-                        shutil.copyfile(dest, corrupt)
+                        subprocess.check_call(['cp', dest, corrupt])
                         logging.warn("Corrupt file saved as %s" % corrupt)
-                        shutil.copyfile(source, dest)
-                    except IOError as e:
+                        subprocess.check_call(['cp', source, dest])
+                    except subprocess.CalledProcessError as e:
                         logging.warn("Failed to copy %s! %s" % (dest, e))
             except Exception as e:
                 logging.warn("Exception during heal: %s" % str(e))
@@ -109,8 +108,8 @@ def heal_metric(source, dest, start_time=0, end_time=None, overwrite=False,
         except os.error:
             pass
         try:
-            shutil.copyfile(source, dest)
-        except IOError as e:
+            subprocess.check_call(['cp', source, dest])
+        except subprocess.CalledProcessError as e:
             logging.warn("Failed to copy %s! %s" % (dest, e))
 
 
