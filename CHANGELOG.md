@@ -1,3 +1,18 @@
+## v0.2.3
+
+ - support new versions of carbon (PR#74 @wdauchy)
+ - lock whisper files during carbon-sync and whisper-fill (PR#48 @fillipog, PR#71 @deniszh)
+ - Fixes and optimizations for carbonate (PR#68 @iksaif, PR#70 @deniszh)
+ - Make the heal process resilient (PR#42 @jjneely, PR#69 @deniszh)
+ - Add option to follow symlinks (PR#65 @tmak0)
+ - Do not overwrite target WSP file if source is corrupt (PR#52 @jjneely)
+ - 'carbon-stale' tool to help find metrics with blank/missing data (PR#30 @bitprophet)
+ - remove shebang, not a cli script (PR#55 @piotr1212)
+ - mention environment variables in README.md (PR#53 @fillipog)
+ - Fixup badge link in readme (PR#66 @dozoisch)
+ - Add dirty mode for sync (PR#39 @iksaif)
+ - Read config-file and cluster options from environ (PR#49 @fillipog)
+
 ## v0.2.2
 
 - Load `/opt/graphite/lib` into python's path when executing any binstubs
