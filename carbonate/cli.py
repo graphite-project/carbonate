@@ -193,7 +193,7 @@ def carbon_sync():
     remote_ip = args.source_node
     remote = "%s@%s:%s/" % (user, remote_ip, args.source_storage_dir)
 
-    whisper_lock_writes = config.whisper_lock_writes(args.config_file) or \
+    whisper_lock_writes = config.whisper_lock_writes(args.cluster) or \
         args.lock
 
     metrics_to_sync = []
