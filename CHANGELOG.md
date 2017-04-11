@@ -1,3 +1,7 @@
+## v1.0.0
+ - Fix reading whisper_lock_writes from cluster config in carbon_sync (PR#77, @justincmoy)
+ - Bumping version to 1.0.0 to match Graphite releases
+
 ## v0.2.3
 
  - support new versions of carbon (PR#74 @wdauchy)
