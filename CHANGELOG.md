@@ -1,6 +1,7 @@
 ## v1.0.0
- - Fix reading whisper_lock_writes from cluster config in carbon_sync (PR#77, @justincmoy)
  - Bumping version to 1.0.0 to match Graphite releases
+ - unpin Twisted, remove py26 support (PR#78, @iksaif). Carbonate should still be Python 2.6 compatible, but newer Twisted is not
+ - Fix reading whisper_lock_writes from cluster config in carbon_sync (PR#77, @justincmoy)
 
 ## v0.2.3
 
