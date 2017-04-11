@@ -1,3 +1,2 @@
-Twisted==11.1.0
 carbon
 whisper
