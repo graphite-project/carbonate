@@ -325,8 +325,9 @@ carbon-list | carbon-stale -p | xargs -n 100 rm
 ```
 
 
-# License and warnings
-
-These tools should be considered beta quality right now. Tests exist for most functionality, but there is still significant work to be done to make them bullet-proof. However, instead of sitting on this code, I'd rather release it and allow others to provide input and help guide the development. So, expect a few bugs and please help me fix them!
+# License
 
 The code is available under the MIT license.
+
+
+
