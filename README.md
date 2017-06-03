@@ -2,6 +2,7 @@
 
 > "Pop bottles." *-- Birdman*
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/99e1654102b74d82a63505145334e7ed)](https://www.codacy.com/app/graphite-project/carbonate?utm_source=github.com&utm_medium=referral&utm_content=graphite-project/carbonate&utm_campaign=badger)
 [![Build Status](https://travis-ci.org/graphite-project/carbonate.svg?branch=master)](https://travis-ci.org/graphite-project/carbonate)
 
 Graphite clusters are pretty cool. Here are some primitive tools to help you manage your graphite clusters.
