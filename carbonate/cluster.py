@@ -23,19 +23,19 @@ class Cluster():
         # Support multiple versions of carbon, the API changed in 0.10.
         args = inspect.getargspec(ConsistentHashingRouter.__init__).args
         if 'replication_factor' in args:
-            router = ConsistentHashingRouter(config.replication_factor(cluster))
+            r = ConsistentHashingRouter(config.replication_factor(cluster))
         else:
             class Settings(object):
                 REPLICATION_FACTOR = config.replication_factor(cluster)
                 DIVERSE_REPLICAS = False
-            router = ConsistentHashingRouter(Settings())
+            r = ConsistentHashingRouter(Settings())
 
         # 'hash_type' was added only in carbon 1.0.2 or master
         args = inspect.getargspec(ConsistentHashRing.__init__).args
         if 'hash_type' in args:
-            router.ring = ConsistentHashRing(hash_type=config.hashing_type(cluster))
+            r.ring = ConsistentHashRing(hash_type=config.hashing_type(cluster))
 
-        self.ring = router
+        self.ring = r
 
         try:
             dest_list = config.destinations(cluster)
