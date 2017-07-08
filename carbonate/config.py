@@ -52,3 +52,14 @@ class Config():
             return bool(self.config.get(cluster, 'whisper_lock_writes'))
         except NoOptionError:
             return False
+
+    def hashing_type(self, cluster='main'):
+        """Hashing type of cluster."""
+        if not self.config.has_section(cluster):
+            raise SystemExit("Cluster '%s' not defined in %s"
+                             % (cluster, self.config_file))
+        hashing_type = 'carbon_ch'
+        try:
+            return self.config.get(cluster, 'hashing_type')
+        except NoOptionError:
+            return hashing_type
