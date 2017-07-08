@@ -43,7 +43,7 @@ class ConfigTest(unittest.TestCase):
         c = config.Config(self.real_config)
 
         expected = 'fnv1a_ch'
-        self.assertEqual(c.hashing_type('fnv'), expected)
+        self.assertEqual(c.hashing_type('fnv1a'), expected)
 
     def test_config_hashing_type_default(self):
         c = config.Config(self.simple_config)
