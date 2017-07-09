@@ -26,13 +26,21 @@ Carbonate expects a configuration file that defines the clusters in your environ
 DESTINATIONS = 192.168.9.13:2004:carbon01, 192.168.9.15:2004:carbon02, 192.168.6.20:2004:carbon03
 REPLICATION_FACTOR = 2
 SSH_USER = carbon
+
+[fnv]
+DESTINATIONS = 192.168.9.13:2004:ba603c36342304ed77953f84ac4d357b, 192.168.9.15:2004:5dd63865534f84899c6e5594dba6749a, 192.168.6.20:2004:866a18b81f2dc4649517a1df13e26f28
+REPLICATION_FACTOR = 2
+SSH_USER = carbonate
+HASHING_TYPE = fnv1a_ch
 ```
 
 You should take care to match the list of destination IPs or hostnames to the nodes in your cluster. Though its worth noting that the ports and labels are currently not used by carbonate. Order is important because of how the consistent hash ring is created.
 
 The replication factor should match the replication factor for the cluster.
 
-Finally, you can choose to provide a SSH user that will be used when carbonate requires connecting to another node in the cluster to perform an operation. If this is not provided, then the current user executing the command will be chosen.
+Also, you can choose to provide a SSH user that will be used when carbonate requires connecting to another node in the cluster to perform an operation. If this is not provided, then the current user executing the command will be chosen.
+
+Finally, you can provide HASHING_TYPE of your cluster. Default is `carbon_ch`, also `fnv1a_ch` is supported. Please note that for using `fnv1a_ch` hashing you need `carbon` 1.0.2 or newer installed. (*experimental feature*)
 
 ## The Tools
 
