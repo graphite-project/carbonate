@@ -24,7 +24,7 @@ class ConfigTest(unittest.TestCase):
     def test_config_multiple_clusters(self):
         c = config.Config(self.real_config)
 
-        expected = ['main', 'standalone']
+        expected = ['main', 'standalone', 'fnv']
         self.assertEqual(set(c.clusters()), set(expected))
 
     def test_config_ssh_user(self):
@@ -38,3 +38,15 @@ class ConfigTest(unittest.TestCase):
 
         expected = pwd.getpwuid(os.getuid()).pw_name
         self.assertEqual(c.ssh_user(), expected)
+
+    def test_config_hashing_type(self):
+        c = config.Config(self.real_config)
+
+        expected = 'fnv1a_ch'
+        self.assertEqual(c.hashing_type('fnv'), expected)
+
+    def test_config_hashing_type_default(self):
+        c = config.Config(self.simple_config)
+
+        expected = 'carbon_ch'
+        self.assertEqual(c.hashing_type(), expected)

@@ -13,6 +13,7 @@ sys.path.insert(0, venv_root + "/opt/graphite/lib")
 try:
     from carbon import util
     from carbon.routers import ConsistentHashingRouter
+    from carbon.hashing import ConsistentHashRing
 except ImportError as e:
     raise SystemExit("No bueno. Can't import carbon! (" + str(e) + ")")
 
@@ -22,14 +23,19 @@ class Cluster():
         # Support multiple versions of carbon, the API changed in 0.10.
         args = inspect.getargspec(ConsistentHashingRouter.__init__).args
         if 'replication_factor' in args:
-            ring = ConsistentHashingRouter(config.replication_factor(cluster))
+            r = ConsistentHashingRouter(config.replication_factor(cluster))
         else:
             class Settings(object):
                 REPLICATION_FACTOR = config.replication_factor(cluster)
                 DIVERSE_REPLICAS = False
-            ring = ConsistentHashingRouter(Settings())
+            r = ConsistentHashingRouter(Settings())
 
-        self.ring = ring
+        # 'hash_type' was added only in carbon 1.0.2 or master
+        args = inspect.getargspec(ConsistentHashRing.__init__).args
+        if 'hash_type' in args:
+            r.ring = ConsistentHashRing(hash_type=config.hashing_type(cluster))
+
+        self.ring = r
 
         try:
             dest_list = config.destinations(cluster)
