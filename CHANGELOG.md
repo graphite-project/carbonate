@@ -1,3 +1,6 @@
+## v1.0.2
+ - (Experimental) support for fnv1a_ch hashing (PR#83, @deniszh)
+
 ## v1.0.0
  - Bumping version to 1.0.0 to match Graphite releases
  - unpin Twisted, remove py26 support (PR#78, @iksaif). Carbonate should still be Python 2.6 compatible, but newer Twisted is not
