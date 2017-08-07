@@ -33,7 +33,7 @@ class Cluster():
         # 'hash_type' was added only in carbon 1.0.2 or master
         args = inspect.getargspec(ConsistentHashRing.__init__).args
         if 'hash_type' in args:
-            r.ring = ConsistentHashRing(hash_type=config.hashing_type(cluster))
+            r.ring = ConsistentHashRing(nodes=[],hash_type=config.hashing_type(cluster))
 
         self.ring = r
 
