@@ -30,18 +30,18 @@ class Cluster():
                 DIVERSE_REPLICAS = False
             r = ConsistentHashingRouter(Settings())
 
-        # 'hash_type' was added only in carbon 1.0.2 or master
-        args = inspect.getargspec(ConsistentHashRing.__init__).args
-        if 'hash_type' in args:
-            r.ring = ConsistentHashRing(hash_type=config.hashing_type(cluster))
-
-        self.ring = r
-
         try:
             dest_list = config.destinations(cluster)
             self.destinations = util.parseDestinations(dest_list)
         except ValueError as e:
             raise SystemExit("Unable to parse destinations!" + str(e))
+
+        # 'hash_type' was added only in carbon 1.0.2 or master
+        args = inspect.getargspec(ConsistentHashRing.__init__).args
+        if 'hash_type' in args:
+            r.ring = ConsistentHashRing(nodes=self.destinations,hash_type=config.hashing_type(cluster))
+
+        self.ring = r
 
         for d in self.destinations:
             self.ring.addDestination(d)
