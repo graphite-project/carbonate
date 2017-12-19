@@ -1,3 +1,6 @@
+## v1.1.0
+ - passing empty list for nodes seems to work (PR#87, @olevchyk)
+
 ## v1.0.2
  - (Experimental) support for fnv1a_ch hashing (PR#83, @deniszh)
 
