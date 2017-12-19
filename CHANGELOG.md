@@ -1,4 +1,4 @@
-## v1.1.0
+## v1.1.1
  - passing empty list for nodes seems to work (PR#87, @olevchyk)
 
 ## v1.0.2
