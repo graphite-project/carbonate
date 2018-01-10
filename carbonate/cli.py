@@ -186,6 +186,7 @@ def carbon_sync():
     parser.add_argument(
         '-o', '--overwite',
         default=False,
+        dest='overwrite',
         action='store_true',
         help='Write all non nullpoints from src to dst')
 
@@ -403,6 +404,7 @@ def whisper_fill():
     parser.add_argument(
         '-o', '--overwite',
         default=False,
+        dest='overwrite',
         action='store_true',
         help='Write all non nullpoints from src to dst')
 
