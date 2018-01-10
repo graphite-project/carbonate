@@ -129,17 +129,17 @@ optional arguments:
 usage: carbon-sync [-h] [-c CONFIG_FILE] [-C CLUSTER] [-f METRICS_FILE] -s
                    SOURCE_NODE [-d STORAGE_DIR] [-b BATCH_SIZE]
                    [--source-storage-dir SOURCE_STORAGE_DIR]
-                   [--rsync-options [RSYNC_OPTIONS [RSYNC_OPTIONS ...]]]
+                   [--rsync-options RSYNC_OPTIONS] [--dirty] [-l] [-o]
 
 Sync local metrics using remote nodes in the cluster
 
 optional arguments:
   -h, --help            show this help message and exit
   -c CONFIG_FILE, --config-file CONFIG_FILE
-                        Config file to use (default:
+                        Config file to use (env: CARBONATE_CONFIG) (default:
                         /opt/graphite/conf/carbonate.conf)
   -C CLUSTER, --cluster CLUSTER
-                        Cluster name (default: main)
+                        Cluster name (env: CARBONATE_CLUSTER) (default: main)
   -f METRICS_FILE, --metrics-file METRICS_FILE
                         File containing metric names to filter, or '-' to read
                         from STDIN (default: -)
@@ -152,8 +152,14 @@ optional arguments:
   --source-storage-dir SOURCE_STORAGE_DIR
                         Source storage dir (default:
                         /opt/graphite/storage/whisper)
-  --rsync-options [RSYNC_OPTIONS [RSYNC_OPTIONS ...]]
-                        Pass option(s) to rsync (default: -azpS)
+  --rsync-options RSYNC_OPTIONS
+                        Pass option(s) to rsync. Make sure to use "--rsync-
+                        options=" if option starts with '-' (default: -azpS)
+  --dirty               If set, don't clean temporary rsync directory
+                        (default: False)
+  -l, --lock            Lock whisper files during filling (default: False)
+  -o, --overwite        Write all non nullpoints from src to dst (default:
+                        False)
 ```
 
 ### carbon-path
@@ -236,16 +242,18 @@ optional arguments:
 ### whisper-fill
 
 ```
-usage: whisper-fill [-h] SRC DST
+usage: whisper-fill [-h] [-l] [-o] SRC DST
 
 Backfill datapoints from one whisper file into another
 
 positional arguments:
-  SRC         Whisper source file
-  DST         Whisper destination file
+  SRC             Whisper source file
+  DST             Whisper destination file
 
 optional arguments:
-  -h, --help  show this help message and exit
+  -h, --help      show this help message and exit
+  -l, --lock      Lock whisper files during filling (default: False)
+  -o, --overwite  Write all non nullpoints from src to dst (default: False)
 ```
 
 ## Example usage
