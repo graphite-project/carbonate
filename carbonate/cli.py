@@ -184,7 +184,7 @@ def carbon_sync():
         help='Lock whisper files during filling')
 
     parser.add_argument(
-        '-o', '--overwite',
+        '-o', '--overwrite',
         default=False,
         dest='overwrite',
         action='store_true',
@@ -402,7 +402,7 @@ def whisper_fill():
         help='Lock whisper files during filling')
 
     parser.add_argument(
-        '-o', '--overwite',
+        '-o', '--overwrite',
         default=False,
         dest='overwrite',
         action='store_true',

@@ -158,7 +158,7 @@ optional arguments:
   --dirty               If set, don't clean temporary rsync directory
                         (default: False)
   -l, --lock            Lock whisper files during filling (default: False)
-  -o, --overwite        Write all non nullpoints from src to dst (default:
+  -o, --overwrite        Write all non nullpoints from src to dst (default:
                         False)
 ```
 
@@ -253,7 +253,7 @@ positional arguments:
 optional arguments:
   -h, --help      show this help message and exit
   -l, --lock      Lock whisper files during filling (default: False)
-  -o, --overwite  Write all non nullpoints from src to dst (default: False)
+  -o, --overwrite  Write all non nullpoints from src to dst (default: False)
 ```
 
 ## Example usage
