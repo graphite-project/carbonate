@@ -76,14 +76,12 @@ class FillTest(unittest.TestCase):
 
         override_data = zip(times, data)
 
-        emptyData = [data]
         startTime = time.time()
         self._createdb(self.db, schema)
         self._createdb(testdb, schema, override_data)
 
         fill_archives(self.db, testdb, startTime)
 
-        original_data = whisper.fetch(self.db, 0)
         filled_data = whisper.fetch(testdb, 0)
         self.assertEqual(data, filled_data[1])
 
@@ -100,24 +98,38 @@ class FillTest(unittest.TestCase):
         schema = [(1, 20)]
         complete = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
                     11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
-        holes = [1, 2, 3, 4, 5, 6, None, None, None, None,
-                 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+        original = [91, # make sure only null values are filled
+                2, 3,
+                4,
+                5,
+                6,
+                7, 8, 9, 10,
+                11, 12, 13, 14, 15, 16, 17, 18, None,  # empty value doesn't overwrite
+                20,
+                ]
+        holes = [1,
+                None, None,  # multiple concecutive missing data points
+                4,
+                None, # single missing data point
+                6,
+                None, None, None, None,
+                11, 12, 13, 14, 15, 16, 17, 18, 19,
+                None, # trailing missing data point
+                ]
 
         end = int(time.time()) + schema[0][0]
         start = end - (schema[0][1] * schema[0][0])
         times = range(start, end, schema[0][0])
 
-        complete_data = zip(times, complete)
-
+        original_data = [t for t in zip(times, original) if t[1] is not None]
         holes_data = [t for t in zip(times, holes) if t[1] is not None]
-        self._createdb(self.db, schema, complete_data)
+        self._createdb(self.db, schema, original_data)
         self._createdb(testdb, schema, holes_data)
 
         fill_archives(self.db, testdb, time.time())
 
-        original_data = whisper.fetch(self.db, 0)
         filled_data = whisper.fetch(testdb, 0)
-        self.assertEqual(original_data, filled_data)
+        self.assertEqual(complete, filled_data[1])
 
     @mock.patch('time.time', return_value=123456)
     def test_fill_endat(self, unused_mock_time):

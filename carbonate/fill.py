@@ -95,7 +95,7 @@ def fill_archives(src, dst, startFrom, endAt=0, overwrite=False,
     startFrom is the latest timestamp (archives are read backward)
     endAt is the earliest timestamp (archives are read backward).
           if absent, we take the earliest timestamp in the archive
-    overwrite will write all non nullpoints from src dst.
+    overwrite will write all non null points from src dst.
     lock using whisper lock if true
     """
     if lock_writes is False:
@@ -120,14 +120,13 @@ def fill_archives(src, dst, startFrom, endAt=0, overwrite=False,
             if not has_value and not gapstart:
                 gapstart = start
             elif has_value and gapstart:
-                # ignore single units lost
-                if (start - gapstart) > archive['secondsPerPoint']:
+                if (start - gapstart) >= archive['secondsPerPoint']:
                     fill(src, dst, gapstart - step, start)
                 gapstart = None
-            elif gapstart and start == end - step:
-                fill(src, dst, gapstart - step, start)
-
             start += step
+        # fill if this gap continues to the end
+        if gapstart:
+            fill(src, dst, gapstart - step, end - step)
 
         # The next archive only needs to be filled up to the latest point
         # in time we updated.
