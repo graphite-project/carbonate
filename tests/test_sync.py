@@ -24,6 +24,37 @@ class SyncTest(unittest.TestCase):
             pass
 
 
+    def test_heal_mixed_data(self):
+        testdb = "test-%s" % self.db
+        self._removedb()
+
+        try:
+            os.unlink(testdb)
+        except (IOError, OSError):
+            pass
+
+        schema = [(1, 20)]
+        have = [1, 2, 3, None, 5, 6, 7, 8, 9, 10,
+                    11, 12, 13, 14, 15, None, 17, 18, 19, None]
+        remote = [1, 2, 3, 4, 5, 6, None, None, None, None,
+                 11, 12, 13, 14, 15, 16, 17, 18, None, 20]
+
+        end = int(time.time()) + schema[0][0]
+        start = end - (schema[0][1] * schema[0][0])
+        times = range(start, end, schema[0][0])
+
+        have_data = [t for t in zip(times, have) if t[1] is not None]
+        remote_data = [t for t in zip(times, remote) if t[1] is not None]
+
+        self._createdb(self.db, schema, remote_data)
+        self._createdb(testdb, schema, have_data)
+
+        heal_metric(self.db, testdb, overwrite=True)
+
+        final_data = whisper.fetch(testdb, 0)
+        self.assertEqual(final_data[1], range(1,21))
+
+
     def test_heal_empty(self):
         testdb = "test-%s" % self.db
         self._removedb()

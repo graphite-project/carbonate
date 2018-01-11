@@ -183,6 +183,13 @@ def carbon_sync():
         action='store_true',
         help='Lock whisper files during filling')
 
+    parser.add_argument(
+        '-o', '--overwrite',
+        default=False,
+        dest='overwrite',
+        action='store_true',
+        help='Write all non nullpoints from src to dst')
+
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.INFO)
@@ -215,7 +222,8 @@ def carbon_sync():
                   % (total_metrics-batch_size+1, total_metrics)
             run_batch(metrics_to_sync, remote,
                       args.storage_dir, args.rsync_options,
-                      remote_ip, args.dirty, lock_writes=whisper_lock_writes)
+                      remote_ip, args.dirty, lock_writes=whisper_lock_writes,
+                      overwrite=args.overwrite)
             metrics_to_sync = []
 
     if len(metrics_to_sync) > 0:
@@ -393,6 +401,13 @@ def whisper_fill():
         action='store_true',
         help='Lock whisper files during filling')
 
+    parser.add_argument(
+        '-o', '--overwrite',
+        default=False,
+        dest='overwrite',
+        action='store_true',
+        help='Write all non nullpoints from src to dst')
+
     args = parser.parse_args()
 
     src = args.source
@@ -406,4 +421,4 @@ def whisper_fill():
 
     startFrom = time()
 
-    fill_archives(src, dst, startFrom, lock_writes=args.lock)
+    fill_archives(src, dst, startFrom, lock_writes=args.lock, overwrite=args.overwrite)
