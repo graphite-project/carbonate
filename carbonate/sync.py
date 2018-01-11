@@ -138,7 +138,8 @@ def run_batch(metrics_to_sync, remote, local_storage, rsync_options,
 
     rsync_elapsed = (time() - rsync_start)
 
-    merge_elapsed = sync_batch(metrics_to_heal, lock_writes=lock_writes, overwrite=overwrite)
+    merge_elapsed = sync_batch(metrics_to_heal, lock_writes=lock_writes,
+                               overwrite=overwrite)
 
     total_time = rsync_elapsed + merge_elapsed
 
