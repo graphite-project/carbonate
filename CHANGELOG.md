@@ -1,3 +1,7 @@
+## v1.1.2
+ - carbon-sync: expose --overwrite to copy all non-null datapoints (PR#89, @jehiah)
+ - fill: fix bugs causing some data points not to be copied (PR#90, @jehiah)
+
 ## v1.1.1
  - passing empty list for nodes seems to work (PR#87, @olevchyk)
 
