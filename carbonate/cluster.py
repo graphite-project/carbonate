@@ -28,6 +28,7 @@ class Cluster():
             class Settings(object):
                 REPLICATION_FACTOR = config.replication_factor(cluster)
                 DIVERSE_REPLICAS = False
+                ROUTER_HASH_TYPE = None
             r = ConsistentHashingRouter(Settings())
 
         # 'hash_type' was added only in carbon 1.0.2 or master
