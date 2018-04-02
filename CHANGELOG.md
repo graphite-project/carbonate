@@ -1,3 +1,7 @@
+## v1.1.3
+ - Fixing carbon router hash (PR#93, @deniszh)
+ - Adding LICENSE file to pypi package (PR#97, @deniszh)
+
 ## v1.1.2
  - carbon-sync: expose --overwrite to copy all non-null datapoints (PR#89, @jehiah)
  - fill: fix bugs causing some data points not to be copied (PR#90, @jehiah)
