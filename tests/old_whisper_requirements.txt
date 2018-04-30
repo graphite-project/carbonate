@@ -1,3 +1,4 @@
 Twisted==11.1.0
 carbon
 whisper==0.9.9
+scandir
