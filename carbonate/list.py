@@ -4,9 +4,9 @@ import re
 # Use the built-in version of scandir/walk if possible, otherwise
 # use the scandir module version
 try:
-    from os import scandir, walk
+    from os import scandir, walk  # noqa # pylint: disable=unused-import
 except ImportError:
-    from scandir import scandir, walk
+    from scandir import scandir, walk  # noqa # pylint: disable=unused-import
 
 
 def listMetrics(storage_dir, follow_sym_links=False, metric_suffix='wsp'):
@@ -14,8 +14,7 @@ def listMetrics(storage_dir, follow_sym_links=False, metric_suffix='wsp'):
 
     storage_dir = storage_dir.rstrip(os.sep)
 
-    for root, dirnames, filenames in walk(storage_dir,
-                                          followlinks=follow_sym_links):
+    for root, _, filenames in walk(storage_dir, followlinks=follow_sym_links):
         for filename in filenames:
             if metric_regex.match(filename):
                 root_path = root[len(storage_dir) + 1:]
