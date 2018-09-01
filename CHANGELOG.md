@@ -1,3 +1,7 @@
+## v1.1.4
+ - Use the scandir version of os.walk if possible (PR#99, @deejay1)
+ - Include LICENSE in MANIFEST.in (PR#100, @deejay1)
+
 ## v1.1.3
  - Fixing carbon router hash (PR#93, @deniszh)
  - Adding LICENSE file to pypi package (PR#97, @deniszh)
