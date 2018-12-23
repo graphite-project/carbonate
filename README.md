@@ -34,7 +34,7 @@ SSH_USER = carbonate
 HASHING_TYPE = fnv1a_ch
 ```
 
-You should take care to match the list of destination IPs or hostnames to the nodes in your cluster. Though its worth noting that the ports and labels are currently not used by carbonate. Order is important because of how the consistent hash ring is created.
+You should take care to match the list of destination IPs or hostnames to the nodes in your cluster (i.e. it should match with routing configuretion of your carbon relay). Order is important because of how the consistent hash ring is created. Default hash type is `carbon_ch`, but `fnv1a_ch` from [carbon-c-relay](https://github.com/grobian/carbon-c-relay) is also supported.
 
 The replication factor should match the replication factor for the cluster.
 
