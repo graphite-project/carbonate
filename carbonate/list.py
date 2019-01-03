@@ -10,7 +10,7 @@ except ImportError:
 
 
 def listMetrics(storage_dir, follow_sym_links=False, metric_suffix='wsp'):
-    metric_regex = re.compile(".*\.%s$" % metric_suffix)
+    metric_regex = re.compile(r".*\.%s$" % metric_suffix)
 
     storage_dir = storage_dir.rstrip(os.sep)
 
