@@ -12,15 +12,15 @@ from whisper import CorruptWhisperFile
 from .fill import fill_archives
 
 
-def sync_from_remote(sync_file, remote, staging, rsync_options):
+def sync_from_remote(storage_dir, sync_file, remote, staging, rsync_options):
     try:
         try:
             os.makedirs(os.path.dirname(staging))
         except OSError:
             pass
 
-        cmd = " ".join(['rsync', rsync_options, '--files-from',
-                        sync_file.name, remote, staging
+        cmd = " ".join(['rsync', rsync_options, '--copy-dest', storage_dir,
+                        '--files-from', sync_file.name, remote, staging
                         ])
 
         print "  - Rsyncing metrics"
@@ -115,7 +115,7 @@ def heal_metric(source, dest, start_time=0, end_time=None, overwrite=False,
             logging.warn("Failed to copy %s! %s" % (dest, e))
 
 
-def run_batch(metrics_to_sync, remote, local_storage, rsync_options,
+def run_batch(metrics_to_sync, remote, storage_dir, rsync_options,
               remote_ip, dirty, lock_writes=False, overwrite=False):
     staging_dir = mkdtemp(prefix=remote_ip)
     sync_file = NamedTemporaryFile(delete=False)
@@ -126,7 +126,7 @@ def run_batch(metrics_to_sync, remote, local_storage, rsync_options,
 
     for metric in metrics_to_sync:
         staging_file = "%s/%s" % (staging_dir, metric)
-        local_file = "%s/%s" % (local_storage, metric)
+        local_file = "%s/%s" % (storage_dir, metric)
         metrics_to_heal.append((staging_file, local_file))
 
     sync_file.write("\n".join(metrics_to_sync))
@@ -134,7 +134,7 @@ def run_batch(metrics_to_sync, remote, local_storage, rsync_options,
 
     rsync_start = time()
 
-    sync_from_remote(sync_file, remote, staging, rsync_options)
+    sync_from_remote(storage_dir, sync_file, remote, staging, rsync_options)
 
     rsync_elapsed = (time() - rsync_start)
 
