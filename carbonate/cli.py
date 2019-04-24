@@ -173,6 +173,12 @@ def carbon_sync():
         '"--rsync-options=" if option starts with \'-\'')
 
     parser.add_argument(
+        '--rsync-disable-copy-dest',
+        default=False,
+        action='store_true',
+        help='Avoid --copy-dest, transfer all whisper data between nodes.')
+
+    parser.add_argument(
         '--dirty',
         action='store_true',
         help="If set, don't clean temporary rsync directory")
@@ -210,6 +216,10 @@ def carbon_sync():
     total_metrics = 0
     batch_size = int(args.batch_size)
 
+    rsync_options = args.rsync_options
+    if not args.rsync_disable_copy_dest:
+        rsync_options += ' --copy-dest="%s"' % args.storage_dir
+
     for metric in metrics:
         total_metrics += 1
         metric = metric.strip()
@@ -221,7 +231,7 @@ def carbon_sync():
             print "* Running batch %s-%s" \
                   % (total_metrics-batch_size+1, total_metrics)
             run_batch(metrics_to_sync, remote,
-                      args.storage_dir, args.rsync_options,
+                      args.storage_dir, rsync_options,
                       remote_ip, args.dirty, lock_writes=whisper_lock_writes,
                       overwrite=args.overwrite)
             metrics_to_sync = []
@@ -230,7 +240,7 @@ def carbon_sync():
         print "* Running batch %s-%s" \
               % (total_metrics-len(metrics_to_sync)+1, total_metrics)
         run_batch(metrics_to_sync, remote,
-                  args.storage_dir, args.rsync_options,
+                  args.storage_dir, rsync_options,
                   remote_ip, args.dirty, lock_writes=whisper_lock_writes)
 
     elapsed = (time() - start)

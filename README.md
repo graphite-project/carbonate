@@ -129,7 +129,8 @@ optional arguments:
 usage: carbon-sync [-h] [-c CONFIG_FILE] [-C CLUSTER] [-f METRICS_FILE] -s
                    SOURCE_NODE [-d STORAGE_DIR] [-b BATCH_SIZE]
                    [--source-storage-dir SOURCE_STORAGE_DIR]
-                   [--rsync-options RSYNC_OPTIONS] [--dirty] [-l] [-o]
+                   [--rsync-options RSYNC_OPTIONS] [--rsync-disable-copy-dest]
+                   [--dirty] [-l] [-o]
 
 Sync local metrics using remote nodes in the cluster
 
@@ -155,10 +156,13 @@ optional arguments:
   --rsync-options RSYNC_OPTIONS
                         Pass option(s) to rsync. Make sure to use "--rsync-
                         options=" if option starts with '-' (default: -azpS)
+  --rsync-disable-copy-dest
+                        Avoid --copy-dest, transfer all whisper data between
+                        nodes. (default: False)
   --dirty               If set, don't clean temporary rsync directory
                         (default: False)
   -l, --lock            Lock whisper files during filling (default: False)
-  -o, --overwrite        Write all non nullpoints from src to dst (default:
+  -o, --overwrite       Write all non nullpoints from src to dst (default:
                         False)
 ```
 
