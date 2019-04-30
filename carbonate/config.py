@@ -1,6 +1,9 @@
 import os
 import pwd
-from ConfigParser import RawConfigParser, NoOptionError
+try:
+    from ConfigParser import RawConfigParser, NoOptionError
+except ImportError:
+    from configparser import RawConfigParser, NoOptionError
 
 
 class Config():
