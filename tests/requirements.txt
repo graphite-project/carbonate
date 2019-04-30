@@ -2,7 +2,7 @@ nose
 mock
 coverage
 nosexcover
-flake8
+flake8<3.7
 mccabe==0.6.1
 tox
 pep8
