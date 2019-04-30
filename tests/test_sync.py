@@ -52,7 +52,7 @@ class SyncTest(unittest.TestCase):
         heal_metric(self.db, testdb, overwrite=True)
 
         final_data = whisper.fetch(testdb, 0)
-        self.assertEqual(final_data[1], range(1,21))
+        self.assertEqual(final_data[1], list(range(1,21)))
 
 
     def test_heal_empty(self):
