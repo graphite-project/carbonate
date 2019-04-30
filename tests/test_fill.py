@@ -140,7 +140,7 @@ class FillTest(unittest.TestCase):
         except (IOError, OSError):
             pass
 
-        complete = range(1, 21)
+        complete = list(range(1, 21))
         seconds_per_point = 1
         seconds_per_point_l2 = seconds_per_point * 4
         points_number = len(complete)

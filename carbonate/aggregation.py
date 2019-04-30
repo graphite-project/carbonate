@@ -28,5 +28,5 @@ def setAggregation(path, mode):
     try:
         whisper.setAggregationMethod(path, mode)
         return 1
-    except whisper.WhisperException, exc:
+    except whisper.WhisperException as exc:
         logging.warning("%s failed (%s)" % (path, str(exc)))

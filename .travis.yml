@@ -3,6 +3,7 @@ language: python
 env:
   - TOXENV=py27
   - TOXENV=py27-pre0_9_10
+  - TOXENV=py3
   - TOXENV=lint
 install:
   - pip install tox

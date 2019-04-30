@@ -23,7 +23,7 @@ def sync_from_remote(sync_file, remote, staging, rsync_options):
                         sync_file.name, remote, staging
                         ])
 
-        print "  - Rsyncing metrics"
+        print("  - Rsyncing metrics")
 
         proc = subprocess.Popen(cmd,
                                 shell=True,
@@ -53,7 +53,7 @@ def sync_batch(metrics_to_heal, lock_writes=False, overwrite=False):
                       "Avg: %fs  Time Left: %ss (%d%%)" \
                       % (sync_count, sync_total, sync_avg,
                          sync_remain, sync_percent)
-        print status_line
+        print(status_line)
 
         # Do not try healing data past the point they were rsync'd
         # as we would not have new points in staging anyway.
@@ -143,14 +143,14 @@ def run_batch(metrics_to_sync, remote, local_storage, rsync_options,
 
     total_time = rsync_elapsed + merge_elapsed
 
-    print "    --------------------------------------"
-    print "    Rsync time: %ss" % rsync_elapsed
-    print "    Merge time: %ss" % merge_elapsed
-    print "    Total time: %ss" % total_time
+    print("    --------------------------------------")
+    print("    Rsync time: %ss" % rsync_elapsed)
+    print("    Merge time: %ss" % merge_elapsed)
+    print("    Total time: %ss" % total_time)
 
     # Cleanup
     if dirty:
-        print "    dirty mode: left temporary directory %s" % staging_dir
+        print("    dirty mode: left temporary directory %s" % staging_dir)
     else:
         rmtree(staging_dir)
 
