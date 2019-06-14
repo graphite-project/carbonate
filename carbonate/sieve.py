@@ -5,10 +5,7 @@ map_short = partial(map, lambda m: m[0])
 
 
 def filterMetrics(inputs, node, cluster, invert=False, filter_long=False):
-    if isinstance(node, str):
-        match = [node]
-    else:
-        match = node
+    match = node
 
     for metric_name in inputs:
         dests = list(cluster.getDestinations(metric_name))
