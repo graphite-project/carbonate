@@ -1,3 +1,9 @@
+## v1.1.6
+ - Python 3 support (PR#107, @piotr1212)
+ - Use --copy-dest, enabling the rsync algorithm when copying from remote to staging (PR#106, @luke-heberling)
+ - fix lint errors (PR#105, @YevhenLukomskyi)
+ - specify long_description_content_type, so that package description is properly rendered on pypi.org (PR#104, @YevhenLukomskyi)
+
 ## v1.1.4
  - Use the scandir version of os.walk if possible (PR#99, @deejay1)
  - Include LICENSE in MANIFEST.in (PR#100, @deejay1)
