@@ -27,7 +27,7 @@ try:
     # Python 2
     from future_builtins import filter
     from future_builtins import zip
-    range = xrange
+    range = xrange # noqa
 except ImportError:
     # Python 3
     pass
