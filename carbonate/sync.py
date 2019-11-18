@@ -118,7 +118,7 @@ def heal_metric(source, dest, start_time=0, end_time=None, overwrite=False,
 def run_batch(metrics_to_sync, remote, local_storage, rsync_options,
               remote_ip, dirty, lock_writes=False, overwrite=False):
     staging_dir = mkdtemp(prefix=remote_ip)
-    sync_file = NamedTemporaryFile(delete=False)
+    sync_file = NamedTemporaryFile(mode='w', delete=False)
 
     metrics_to_heal = []
 
