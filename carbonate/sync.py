@@ -31,7 +31,7 @@ def sync_from_remote(sync_file, remote, staging, rsync_options):
                                 stderr=subprocess.STDOUT)
 
         for l in iter(proc.stdout.readline, b''):
-            sys.stdout.write(l)
+            sys.stdout.write(l.decode("utf-8"))
             sys.stdout.flush()
     except subprocess.CalledProcessError as e:
         logging.warn("Failed to sync from %s! %s" % (remote, e))
@@ -118,7 +118,7 @@ def heal_metric(source, dest, start_time=0, end_time=None, overwrite=False,
 def run_batch(metrics_to_sync, remote, local_storage, rsync_options,
               remote_ip, dirty, lock_writes=False, overwrite=False):
     staging_dir = mkdtemp(prefix=remote_ip)
-    sync_file = NamedTemporaryFile(mode='w', delete=False)
+    sync_file = NamedTemporaryFile(delete=False)
 
     metrics_to_heal = []
 
@@ -129,7 +129,7 @@ def run_batch(metrics_to_sync, remote, local_storage, rsync_options,
         local_file = "%s/%s" % (local_storage, metric)
         metrics_to_heal.append((staging_file, local_file))
 
-    sync_file.write("\n".join(metrics_to_sync))
+    sync_file.write(("\n".join(metrics_to_sync)).encode())
     sync_file.flush()
 
     rsync_start = time()
