@@ -31,7 +31,7 @@ def sync_from_remote(sync_file, remote, staging, rsync_options):
                                 stderr=subprocess.STDOUT)
 
         for l in iter(proc.stdout.readline, b''):
-            sys.stdout.write(l)
+            sys.stdout.write(l.decode("utf-8"))
             sys.stdout.flush()
     except subprocess.CalledProcessError as e:
         logging.warn("Failed to sync from %s! %s" % (remote, e))
@@ -129,7 +129,7 @@ def run_batch(metrics_to_sync, remote, local_storage, rsync_options,
         local_file = "%s/%s" % (local_storage, metric)
         metrics_to_heal.append((staging_file, local_file))
 
-    sync_file.write("\n".join(metrics_to_sync))
+    sync_file.write(("\n".join(metrics_to_sync)).encode())
     sync_file.flush()
 
     rsync_start = time()

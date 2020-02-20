@@ -1,11 +1,25 @@
-python: 2.7
 language: python
-env:
-  - TOXENV=py27
-  - TOXENV=py27-pre0_9_10
-  - TOXENV=py3
-  - TOXENV=lint
+jobs:
+  include:
+    - name: "Python 2.7"
+      python: "2.7"
+      env: TOXENV=py27
+    - name: "Python Linting"
+      python: "3.5"
+      env: TOXENV=lint
+    - name: "Python 3.5"
+      python: "3.5"
+      env: TOXENV=py3
+    - name: "Python 3.6"
+      python: "3.6"
+      env: TOXENV=py3
+    - name: "Python 3.7"
+      python: "3.7"
+      env: TOXENV=py3
 install:
   - pip install tox
 script:
   - tox
+after_success:
+  - pip install codecov
+  - codecov
