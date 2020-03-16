@@ -1,3 +1,9 @@
+## v1.1.7
+ - fixes python3 TypeError (#113, @l4r-s)
+ - Change write mode to non-binary. (#111, @hdost)
+ -  Add python3 testing (#110, @hdost)
+ - add codecov (#112, @piotr1212)
+
 ## v1.1.6
  - Python 3 support (PR#107, @piotr1212)
  - Use --copy-dest, enabling the rsync algorithm when copying from remote to staging (PR#106, @luke-heberling)
