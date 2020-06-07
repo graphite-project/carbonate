@@ -1,4 +1,0 @@
-Twisted>=13.2.0
-carbon
-whisper==0.9.9
-scandir

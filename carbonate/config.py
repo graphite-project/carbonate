@@ -29,6 +29,15 @@ class Config():
         destinations = self.config.get(cluster, 'destinations')
         return destinations.replace(' ', '').split(',')
 
+    def relay_method(self, cluster='main'):
+        """Return the carbon relay method for a cluster."""
+        if not self.config.has_section(cluster):
+            raise SystemExit("Cluster '%s' not defined in %s"
+                             % (cluster, self.config_file))
+        if self.config.has_option(cluster, 'relay_method'):
+            return self.config.get(cluster, 'relay_method')
+        return 'consistent-hashing'
+
     def replication_factor(self, cluster='main'):
         """Return the replication factor for a cluster as an integer."""
         if not self.config.has_section(cluster):
@@ -66,3 +75,14 @@ class Config():
             return self.config.get(cluster, 'hashing_type')
         except NoOptionError:
             return hashing_type
+
+    def diverse_replicas(self, cluster='main'):
+        """DIVERSE REPLICAS parameter of cluster."""
+        if not self.config.has_section(cluster):
+            raise SystemExit("Cluster '%s' not defined in %s"
+                             % (cluster, self.config_file))
+        diverse_replicas = True
+        try:
+            return self.config.get(cluster, 'diverse_replicas')
+        except NoOptionError:
+            return diverse_replicas

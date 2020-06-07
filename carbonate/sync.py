@@ -30,8 +30,8 @@ def sync_from_remote(sync_file, remote, staging, rsync_options):
                                 stdout=subprocess.PIPE,
                                 stderr=subprocess.STDOUT)
 
-        for l in iter(proc.stdout.readline, b''):
-            sys.stdout.write(l.decode("utf-8"))
+        for line in iter(proc.stdout.readline, b''):
+            sys.stdout.write(line.decode("utf-8"))
             sys.stdout.flush()
     except subprocess.CalledProcessError as e:
         logging.warn("Failed to sync from %s! %s" % (remote, e))
