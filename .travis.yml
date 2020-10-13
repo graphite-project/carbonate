@@ -4,9 +4,9 @@ jobs:
     - name: "Python 2.7"
       python: "2.7"
       env: TOXENV=py27
-    - name: "Python Linting"
-      python: "3.5"
-      env: TOXENV=lint
+    - name: "pypy 2.7"
+      python: "pypy"
+      env: TOXENV=pypy
     - name: "Python 3.5"
       python: "3.5"
       env: TOXENV=py3
@@ -16,6 +16,15 @@ jobs:
     - name: "Python 3.7"
       python: "3.7"
       env: TOXENV=py3
+    - name: "Python 3.8"
+      python: "3.8"
+      env: TOXENV=py3
+    - name: "pypy 3.6"
+      python: "pypy3"
+      env: TOXENV=pypy3
+    - name: "Python Linting"
+      python: "3.8"
+      env: TOXENV=lint
 install:
   - pip install tox
 script:

@@ -75,6 +75,12 @@ def carbon_lookup():
         help='Full metric name to search for')
 
     parser.add_argument(
+        '-a', '--aggregation-rules',
+        default='/opt/graphite/conf/aggregation-rules.conf',
+        help='File containing rules used in conjunction with the ' +
+             '"aggregated-consistent-hashing" relay method')
+
+    parser.add_argument(
         '-s', '--short',
         action='store_true',
         help='Only display the address, without port and cluster name')
@@ -82,7 +88,7 @@ def carbon_lookup():
     args = parser.parse_args()
 
     config = Config(args.config_file)
-    cluster = Cluster(config, args.cluster)
+    cluster = Cluster(config, args.cluster, args.aggregation_rules)
 
     results = lookup(str(args.metric[0]), cluster)
 
@@ -104,6 +110,12 @@ def carbon_sieve():
              'to read from STDIN')
 
     parser.add_argument(
+        '-a', '--aggregation-rules',
+        default='/opt/graphite/conf/aggregation-rules.conf',
+        help='File containing rules used in conjunction with the ' +
+             '"aggregated-consistent-hashing" relay method')
+
+    parser.add_argument(
         '-n', '--node',
         help='Filter for metrics belonging to this node. Uses the local ' +
              'addresses if not provided.')
@@ -116,7 +128,7 @@ def carbon_sieve():
     args = parser.parse_args()
 
     config = Config(args.config_file)
-    cluster = Cluster(config, args.cluster)
+    cluster = Cluster(config, args.cluster, args.aggregation_rules)
     invert = args.invert
 
     metrics = metrics_from_args(args)

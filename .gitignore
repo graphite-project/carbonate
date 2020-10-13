@@ -42,6 +42,7 @@ coverage.xml
 .mr.developer.cfg
 .project
 .pydevproject
+.idea
 
 # Rope
 .ropeproject
@@ -55,3 +56,4 @@ docs/_build/
 
 # Virtualenv
 .Python
+venv

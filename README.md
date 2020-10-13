@@ -28,6 +28,12 @@ DESTINATIONS = 192.168.9.13:2004:carbon01, 192.168.9.15:2004:carbon02, 192.168.6
 REPLICATION_FACTOR = 2
 SSH_USER = carbon
 
+[agg]
+DESTINATIONS = 192.168.9.13:2004:carbon01, 192.168.9.15:2004:carbon02, 192.168.6.20:2004:carbon03
+RELAY_METHOD = aggregated-consistent-hashing
+REPLICATION_FACTOR = 2
+SSH_USER = carbon
+
 [fnv]
 DESTINATIONS = 192.168.9.13:2004:ba603c36342304ed77953f84ac4d357b, 192.168.9.15:2004:5dd63865534f84899c6e5594dba6749a, 192.168.6.20:2004:866a18b81f2dc4649517a1df13e26f28
 REPLICATION_FACTOR = 2
@@ -36,6 +42,8 @@ HASHING_TYPE = fnv1a_ch
 ```
 
 You should take care to match the list of destination IPs or hostnames to the nodes in your cluster (i.e. it should match with routing configuretion of your carbon relay). Order is important because of how the consistent hash ring is created.
+
+You can configure the relay method to be one of "consistent-hashing" or "aggregated-consistent-hashing". If omitted, "consistent-hashing" is used by default. Use of "aggregated-consistent-hashing" usually requires a rules file to be provided to relevant commands.
 
 The replication factor should match the replication factor for the cluster.
 
@@ -78,6 +86,10 @@ optional arguments:
                         /opt/graphite/conf/carbonate.conf)
   -C CLUSTER, --cluster CLUSTER
                         Cluster name (default: main)
+  -a AGGREGATION_RULES, --aggregation-rules AGGREGATION_RULES
+                        File containing rules used in conjunction with the
+                        "aggregated-consistent-hashing" relay method (default:
+                        /opt/graphite/conf/aggregation-rules.conf)
   -s, --short           Only display the address, without port and cluster
                         name (default: False)
 ```
@@ -115,6 +127,10 @@ optional arguments:
                         /opt/graphite/conf/carbonate.conf)
   -C CLUSTER, --cluster CLUSTER
                         Cluster name (default: main)
+  -a AGGREGATION_RULES, --aggregation-rules AGGREGATION_RULES
+                        File containing rules used in conjunction with the
+                        "aggregated-consistent-hashing" relay method (default:
+                        /opt/graphite/conf/aggregation-rules.conf)
   -f METRICS_FILE, --metrics-file METRICS_FILE
                         File containing metric names to filter, or '-' to read
                         from STDIN (default: -)
