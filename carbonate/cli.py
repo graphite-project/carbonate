@@ -208,6 +208,11 @@ def carbon_sync():
         action='store_true',
         help='Write all non nullpoints from src to dst')
 
+    parser.add_argument(
+        '-t', '--tmpdir',
+        default=None,
+        help='Specify where temporary rsync directories will be created')
+
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.INFO)
@@ -245,7 +250,7 @@ def carbon_sync():
             run_batch(metrics_to_sync, remote,
                       args.storage_dir, rsync_options,
                       remote_ip, args.dirty, lock_writes=whisper_lock_writes,
-                      overwrite=args.overwrite)
+                      overwrite=args.overwrite, tmpdir=args.tmpdir)
             metrics_to_sync = []
 
     if len(metrics_to_sync) > 0:
