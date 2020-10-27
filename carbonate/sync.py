@@ -124,7 +124,7 @@ def heal_metric(source, dest, start_time=0, end_time=None, overwrite=False,
 
 def run_batch(metrics_to_sync, remote, local_storage, rsync_options,
               remote_ip, dirty, lock_writes=False, overwrite=False,
-              tmpdir=None):
+              tmpdir=None, rsync_max_retries, rsync_retries_interval):
     try:
         staging_dir = mkdtemp(prefix=remote_ip, dir=tmpdir)
     except OSError as e:
@@ -145,13 +145,13 @@ def run_batch(metrics_to_sync, remote, local_storage, rsync_options,
 
         sync_tries = 0
         sync_success = False
-        while not sync_success and sync_tries < 3:
+        while not sync_success and sync_tries < rsync_max_retries:
             sync_tries += 1
             rsync_start = time.time()
             sync_success = sync_from_remote(sync_file, remote, staging_dir,
                                             rsync_options)
             if not sync_success:
-                time.sleep(5)
+                time.sleep(rsync_retries_interval)
 
         rsync_elapsed = (time.time() - rsync_start)
 
