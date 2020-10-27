@@ -147,7 +147,8 @@ usage: carbon-sync [-h] [-c CONFIG_FILE] [-C CLUSTER] [-f METRICS_FILE] -s
                    SOURCE_NODE [-d STORAGE_DIR] [-b BATCH_SIZE]
                    [--source-storage-dir SOURCE_STORAGE_DIR]
                    [--rsync-options RSYNC_OPTIONS] [--rsync-disable-copy-dest]
-                   [--dirty] [-l] [-o]
+                   [--tmpdir TMP_STAGING_DIR] [--rsync-max-retries MAX_RETRIES]
+                   [--rsync-retries-interval SECONDS] [--dirty] [-l] [-o]
 
 Sync local metrics using remote nodes in the cluster
 
@@ -176,6 +177,22 @@ optional arguments:
   --rsync-disable-copy-dest
                         Avoid --copy-dest, transfer all whisper data between
                         nodes. (default: False)
+  --rsync-max-retries RETRIES
+                        Number of times rsync will attempt to copy each batch
+                        of metrics before moving on. If all retry attempts are
+                        unsuccessful, carbon-sync will write a file containing
+                        the name of each metric in the failed batch so they can
+                        be easily retried at a later time. (Default: 3)
+  --rsync-retries-interval SECONDS
+                        How long to wait in between each rsync retry attempt
+                        (see --rsync-max-retries). (default: 5)
+  -t TMP_STAGING_DIR, --tmpdir TMP_STAGING_DIR
+                        Specify an alternate location in which the temporary
+                        rsync staging dirs will be created. This can be useful
+                        for large syncs where the default location (as chosen
+                        by mkdtemp) resides on a filesystem that's too small
+                        to store all the metrics being copied from the remote
+                        host.
   --dirty               If set, don't clean temporary rsync directory
                         (default: False)
   -l, --lock            Lock whisper files during filling (default: False)
