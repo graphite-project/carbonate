@@ -145,9 +145,9 @@ def run_batch(metrics_to_sync, remote, local_storage, rsync_options,
 
         sync_tries = 0
         sync_success = False
+        rsync_start = time.time()
         while not sync_success and sync_tries < rsync_max_retries:
             sync_tries += 1
-            rsync_start = time.time()
             sync_success = sync_from_remote(sync_file, remote, staging_dir,
                                             rsync_options)
             if not sync_success:
