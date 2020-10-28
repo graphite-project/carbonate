@@ -39,7 +39,7 @@ def sync_from_remote(sync_file, remote, staging, rsync_options):
 
     if proc.returncode != 0:
         logging.warn("Failed to sync from %s! rsync rc=%d",
-                        remote, proc.returncode)
+                     remote, proc.returncode)
         return False
     return True
 
@@ -129,7 +129,7 @@ def run_batch(metrics_to_sync, remote, local_storage, rsync_options,
         staging_dir = mkdtemp(prefix=remote_ip, dir=tmpdir)
     except OSError as e:
         logging.error('Failed to create rsync staging dir %s: %s' %
-            (e.filename, e.strerror))
+                      (e.filename, e.strerror))
     else:
         sync_file = NamedTemporaryFile(delete=False, dir=tmpdir)
 
