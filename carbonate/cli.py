@@ -208,6 +208,22 @@ def carbon_sync():
         action='store_true',
         help='Write all non nullpoints from src to dst')
 
+    parser.add_argument(
+        '-t', '--tmpdir',
+        default=None,
+        help='Specify where temporary rsync directories will be created')
+
+    parser.add_argument(
+        '--rsync-max-retries',
+        type=int,
+        default=3,
+        help='Maximum number of rsync attempts for each batch of metrics')
+
+    parser.add_argument(
+        '--rsync-retries-interval',
+        default=5,
+        help='How long to wait (in seconds) between rsync retry attempts')
+
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.INFO)
@@ -245,7 +261,9 @@ def carbon_sync():
             run_batch(metrics_to_sync, remote,
                       args.storage_dir, rsync_options,
                       remote_ip, args.dirty, lock_writes=whisper_lock_writes,
-                      overwrite=args.overwrite)
+                      overwrite=args.overwrite, tmpdir=args.tmpdir,
+                      rsync_max_retries=args.rsync_max_retries,
+                      rsync_retries_interval=args.rsync_retries_interval)
             metrics_to_sync = []
 
     if len(metrics_to_sync) > 0:
@@ -253,7 +271,10 @@ def carbon_sync():
               % (total_metrics-len(metrics_to_sync)+1, total_metrics))
         run_batch(metrics_to_sync, remote,
                   args.storage_dir, rsync_options,
-                  remote_ip, args.dirty, lock_writes=whisper_lock_writes)
+                  remote_ip, args.dirty, lock_writes=whisper_lock_writes,
+                  overwrite=args.overwrite, tmpdir=args.tmpdir,
+                  rsync_max_retries=args.rsync_max_retries,
+                  rsync_retries_interval=args.rsync_retries_interval)
 
     elapsed = (time() - start)
 

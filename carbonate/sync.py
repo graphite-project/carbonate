@@ -3,7 +3,7 @@ import sys
 import logging
 import shutil
 import subprocess
-from time import time
+import time
 from datetime import timedelta
 from tempfile import mkdtemp, NamedTemporaryFile
 from shutil import rmtree
@@ -14,31 +14,38 @@ from .fill import fill_archives
 
 def sync_from_remote(sync_file, remote, staging, rsync_options):
     try:
-        try:
-            os.makedirs(os.path.dirname(staging))
-        except OSError:
-            pass
+        os.makedirs(os.path.dirname(staging))
+    except OSError:
+        pass
 
-        cmd = " ".join(['rsync', rsync_options, '--files-from',
-                        sync_file.name, remote, staging
-                        ])
+    cmd = " ".join(['rsync', rsync_options, '--files-from',
+                    sync_file.name, remote, staging + '/'
+                    ])
 
-        print("  - Rsyncing metrics")
+    print("  - Rsyncing metrics: %s" % cmd)
 
-        proc = subprocess.Popen(cmd,
-                                shell=True,
-                                stdout=subprocess.PIPE,
-                                stderr=subprocess.STDOUT)
+    proc = subprocess.Popen(cmd,
+                            shell=True,
+                            universal_newlines=True,
+                            stdout=subprocess.PIPE,
+                            stderr=subprocess.STDOUT)
 
-        for line in iter(proc.stdout.readline, b''):
-            sys.stdout.write(line.decode("utf-8"))
-            sys.stdout.flush()
-    except subprocess.CalledProcessError as e:
-        logging.warn("Failed to sync from %s! %s" % (remote, e))
+    for line in iter(proc.stdout.readline, b''):
+        sys.stdout.write(line.decode("utf-8"))
+        sys.stdout.flush()
+
+    proc.communicate()
+    print("    rc: %d" % proc.returncode)
+
+    if proc.returncode != 0:
+        logging.warn("Failed to sync from %s! rsync rc=%d",
+                     remote, proc.returncode)
+        return False
+    return True
 
 
 def sync_batch(metrics_to_heal, lock_writes=False, overwrite=False):
-    batch_start = time()
+    batch_start = time.time()
     sync_count = 0
     sync_total = len(metrics_to_heal)
     sync_avg = 0.1
@@ -47,7 +54,7 @@ def sync_batch(metrics_to_heal, lock_writes=False, overwrite=False):
 
     for (staging, local) in metrics_to_heal:
         sync_count += 1
-        sync_start = time()
+        sync_start = time.time()
         sync_percent = float(sync_count) / sync_total * 100
         status_line = "  - Syncing %d of %d metrics. " \
                       "Avg: %fs  Time Left: %ss (%d%%)" \
@@ -61,19 +68,19 @@ def sync_batch(metrics_to_heal, lock_writes=False, overwrite=False):
                     overwrite=overwrite,
                     lock_writes=lock_writes)
 
-        sync_elapsed += time() - sync_start
+        sync_elapsed += time.time() - sync_start
         sync_avg = sync_elapsed / sync_count
         sync_remain_s = sync_avg * (sync_total - sync_count)
         sync_remain = str(timedelta(seconds=sync_remain_s))
 
-    batch_elapsed = time() - batch_start
+    batch_elapsed = time.time() - batch_start
     return batch_elapsed
 
 
 def heal_metric(source, dest, start_time=0, end_time=None, overwrite=False,
                 lock_writes=False):
     if end_time is None:
-        end_time = time()
+        end_time = time.time()
     try:
         with open(dest):
             try:
@@ -116,42 +123,61 @@ def heal_metric(source, dest, start_time=0, end_time=None, overwrite=False,
 
 
 def run_batch(metrics_to_sync, remote, local_storage, rsync_options,
-              remote_ip, dirty, lock_writes=False, overwrite=False):
-    staging_dir = mkdtemp(prefix=remote_ip)
-    sync_file = NamedTemporaryFile(delete=False)
-
-    metrics_to_heal = []
-
-    staging = "%s/" % (staging_dir)
-
-    for metric in metrics_to_sync:
-        staging_file = "%s/%s" % (staging_dir, metric)
-        local_file = "%s/%s" % (local_storage, metric)
-        metrics_to_heal.append((staging_file, local_file))
-
-    sync_file.write(("\n".join(metrics_to_sync)).encode())
-    sync_file.flush()
-
-    rsync_start = time()
-
-    sync_from_remote(sync_file, remote, staging, rsync_options)
-
-    rsync_elapsed = (time() - rsync_start)
-
-    merge_elapsed = sync_batch(metrics_to_heal, lock_writes=lock_writes,
-                               overwrite=overwrite)
-
-    total_time = rsync_elapsed + merge_elapsed
-
-    print("    --------------------------------------")
-    print("    Rsync time: %ss" % rsync_elapsed)
-    print("    Merge time: %ss" % merge_elapsed)
-    print("    Total time: %ss" % total_time)
-
-    # Cleanup
-    if dirty:
-        print("    dirty mode: left temporary directory %s" % staging_dir)
+              remote_ip, dirty, lock_writes=False, overwrite=False,
+              tmpdir=None, rsync_max_retries=3, rsync_retries_interval=5):
+    try:
+        staging_dir = mkdtemp(prefix=remote_ip, dir=tmpdir)
+    except OSError as e:
+        logging.error('Failed to create rsync staging dir %s: %s' %
+                      (e.filename, e.strerror))
     else:
-        rmtree(staging_dir)
+        sync_file = NamedTemporaryFile(delete=False, dir=tmpdir)
 
-    os.unlink(sync_file.name)
+        metrics_to_heal = []
+
+        for metric in metrics_to_sync:
+            staging_file = "%s/%s" % (staging_dir, metric)
+            local_file = "%s/%s" % (local_storage, metric)
+            metrics_to_heal.append((staging_file, local_file))
+
+        sync_file.write(("\n".join(metrics_to_sync)).encode())
+        sync_file.flush()
+
+        sync_tries = 0
+        sync_success = False
+        rsync_start = time.time()
+        while not sync_success and sync_tries < rsync_max_retries:
+            sync_tries += 1
+            sync_success = sync_from_remote(sync_file, remote, staging_dir,
+                                            rsync_options)
+            if not sync_success:
+                time.sleep(rsync_retries_interval)
+
+        rsync_elapsed = (time.time() - rsync_start)
+
+        if sync_success:
+            merge_elapsed = sync_batch(metrics_to_heal,
+                                       lock_writes=lock_writes,
+                                       overwrite=overwrite)
+        else:
+            merge_elapsed = 0.0
+            with NamedTemporaryFile(delete=False,
+                                    dir=tmpdir,
+                                    suffix='.failed') as f:
+                f.write(("\n".join(metrics_to_sync)).encode())
+                print("    Rsync failed; metric names saved to %s" % f.name)
+
+        total_time = rsync_elapsed + merge_elapsed
+
+        print("    --------------------------------------")
+        print("    Rsync time: %ss" % rsync_elapsed)
+        print("    Merge time: %ss" % merge_elapsed)
+        print("    Total time: %ss" % total_time)
+
+        # Cleanup
+        if dirty:
+            print("    dirty mode: left temporary directory %s" % staging_dir)
+        else:
+            rmtree(staging_dir)
+
+        os.unlink(sync_file.name)
