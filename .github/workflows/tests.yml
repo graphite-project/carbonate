@@ -16,27 +16,27 @@ jobs:
           - name: "Python 2.7"
             python-version: '2.7'
             toxenv: "py27"
+          - name: "Pypy 2.7"
+            python-version: 'pypy-2.7'
+            toxenv: 'pypy'
           - name: "Python 3.6"
             python-version: '3.6'
             toxenv: 'py3'
+          - name: "Pypy 3.6"
+            python-version: 'pypy-3.6'
+            toxenv: 'pypy3'
           - name: "Python 3.7"
             python-version: '3.7'
             toxenv: 'py3'
+          - name: "Pypy 3.7"
+            python-version: 'pypy-3.7'
+            toxenv: 'pypy3'
           - name: "Python 3.8"
             python-version: '3.8'
             toxenv: 'py3'
           - name: "Python 3.9"
             python-version: '3.9'
             toxenv: 'py3'
-          - name: "Pypy 2.7"
-            python-version: 'pypy-2.7'
-            toxenv: 'pypy'
-          - name: "Pypy 3.6"
-            python-version: 'pypy-3.6'
-            toxenv: 'pypy3'
-          - name: "Pypy 3.7"
-            python-version: 'pypy-3.7'
-            toxenv: 'pypy3'
 
     steps:
       - uses: actions/checkout@v2
@@ -49,19 +49,17 @@ jobs:
           python -m pip install --upgrade pip
           pip install tox flake8 pytest
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-      - name: Test with tox
+      - name: Tests with tox
         env:
           TOXENV: ${{ matrix.toxenv }}
         run: |
           tox
       - name: Linting
-        if: ${{ matrix.python-version==3.8 }}
+        if: ${{ matrix.python-version==3.9 }}
         env:
           TOXENV: lint
         run: |
           tox
       - name: Run Codecov
-        if: ${{ matrix.python-version==3.8 }}
+        if: ${{ matrix.python-version==3.9 }}
         uses: codecov/codecov-action@v1
-        with:
-          verbose: true
