@@ -62,4 +62,11 @@ jobs:
           tox
       - name: Run Codecov
         if: ${{ matrix.python-version==3.9 }}
+        env:
+          TOXENV: lint
+        run: |
+          pip install codecov
+          codecov
+      - name: Upload coverage to Codecov
+        if: ${{ matrix.python-version==3.9 }}
         uses: codecov/codecov-action@v1
