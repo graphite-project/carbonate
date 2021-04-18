@@ -1,3 +1,7 @@
+## v1.1.8
+ - support for Aggregated-Consistent Hash (#121 / #56, @deniszh / @klynch)
+ - handle transient network failures and support custom staging dir path (#122, @ryangsteele)
+
 ## v1.1.7
  - fixes python3 TypeError (#113, @l4r-s)
  - Change write mode to non-binary. (#111, @hdost)
