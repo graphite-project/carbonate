@@ -186,7 +186,9 @@ class FillTest(unittest.TestCase):
         self.assertEqual(filled_data[-1], None)
 
 
-    def _createdb(self, wsp, schema=[(1, 20)], data=None):
+    def _createdb(self, wsp, schema=None, data=None):
+        if schema is None:
+            schema = [(1, 20)]
         whisper.create(wsp, schema)
         if data is None:
             tn = time.time() - 20
