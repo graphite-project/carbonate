@@ -30,8 +30,8 @@ def sync_from_remote(sync_file, remote, staging, rsync_options):
                             stdout=subprocess.PIPE,
                             stderr=subprocess.STDOUT)
 
-    for line in iter(proc.stdout.readline, b''):
-        sys.stdout.write(line.decode("utf-8"))
+    for line in iter(proc.stdout.readline, ''):
+        sys.stdout.write(line)
         sys.stdout.flush()
 
     proc.communicate()
