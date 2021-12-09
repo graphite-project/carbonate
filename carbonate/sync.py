@@ -92,10 +92,10 @@ def heal_metric(source, dest, start_time=0, end_time=None, overwrite=False,
             except CorruptWhisperFile as e:
                 if e.path == source:
                     # The source file is corrupt, we bail
-                    logging.warn("Source file corrupt, skipping: %s" % source)
+                    logging.warn("Source file corrupt, skipping: %s", source)
                 else:
                     # Do it the old fashioned way...possible data loss
-                    logging.warn("Overwriting corrupt file: %s" % dest)
+                    logging.warn("Overwriting corrupt file: %s", dest)
                     try:
                         os.makedirs(os.path.dirname(dest))
                     except os.error:
@@ -104,13 +104,13 @@ def heal_metric(source, dest, start_time=0, end_time=None, overwrite=False,
                         # Make a backup of corrupt file
                         corrupt = dest + ".corrupt"
                         shutil.copyfile(dest, corrupt)
-                        logging.warn("Corrupt file saved as %s" % corrupt)
+                        logging.warn("Corrupt file saved as %s", corrupt)
                         shutil.copyfile(source, dest)
                     except IOError as e:
-                        logging.warn("Failed to copy %s! %s" % (dest, e))
+                        logging.warn("Failed to copy %s! %s", dest, e)
             except Exception as e:
-                logging.warn("Exception during heal: %s" % str(e))
-                logging.warn("Skipping heal: %s => %s" % (source, dest))
+                logging.warn("Exception during heal: %s", str(e))
+                logging.warn("Skipping heal: %s => %s", source, dest)
     except IOError:
         try:
             os.makedirs(os.path.dirname(dest))
@@ -119,7 +119,7 @@ def heal_metric(source, dest, start_time=0, end_time=None, overwrite=False,
         try:
             shutil.copyfile(source, dest)
         except IOError as e:
-            logging.warn("Failed to copy %s! %s" % (dest, e))
+            logging.warn("Failed to copy %s! %s", dest, e)
 
 
 def run_batch(metrics_to_sync, remote, local_storage, rsync_options,
@@ -128,8 +128,8 @@ def run_batch(metrics_to_sync, remote, local_storage, rsync_options,
     try:
         staging_dir = mkdtemp(prefix=remote_ip, dir=tmpdir)
     except OSError as e:
-        logging.error('Failed to create rsync staging dir %s: %s' %
-                      (e.filename, e.strerror))
+        logging.error('Failed to create rsync staging dir %s: %s',
+                      e.filename, e.strerror)
     else:
         sync_file = NamedTemporaryFile(delete=False, dir=tmpdir)
 
