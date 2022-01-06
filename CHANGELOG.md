@@ -1,3 +1,8 @@
+## master (unreleased)
+ - Refactor log lines to use native interpolation (#129, @drawks)
+ - Resolves issue #127 - python3 safe stdout handling (#128, @drawks)
+ - Changed mutable default argument in test_fill.py and test_sync.py (#126, @aastha12)
+
 ## v1.1.8
  - support for Aggregated-Consistent Hash (#121 / #56, @deniszh / @klynch)
  - handle transient network failures and support custom staging dir path (#122, @ryangsteele)
