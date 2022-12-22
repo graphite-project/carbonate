@@ -8,5 +8,6 @@ tox
 pep8
 pyflakes
 Twisted<=20.3.0
+incremental<=17.5.0
 six
 pycodestyle
